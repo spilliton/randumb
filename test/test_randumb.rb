@@ -16,7 +16,9 @@ class TestRandumb < Test::Unit::TestCase
   
   should "correctly extend active record" do
     
-    Artist.random
+    random_artists = Artist.limit(1).random
+    
+    assert_equal 1, random_artists.length 
     
   end
   
