@@ -1,5 +1,3 @@
-puts "TEST HELPER INCLUDED"
-$LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 require 'rubygems'
 require 'test/unit'
@@ -29,9 +27,6 @@ Fixtures.create_fixtures(FIXTURES_PATH, ActiveRecord::Base.connection.tables)
 require File.expand_path(File.dirname(__FILE__) + "/blueprints")
 
 class ActiveSupport::TestCase
-  
-  def setup
-  end
   
   # For machinist
   Machinist.configure do |config|

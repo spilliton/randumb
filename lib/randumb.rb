@@ -1,42 +1,59 @@
-module ActiveRecord
+require 'active_support/core_ext/module/delegation'
+require 'active_record/relation'
 
-  module Randumb
+module Randumb
   
     #  https://github.com/rails/rails/blob/master/activerecord/lib/active_record/relation/query_methods.rb
+  module ActiveRecord
+    
+    module Relation
+      
+      def random(max_items = 1)
+        # take out limit from relation to use later
+    
+        relation = clone
+      
+        original_includes = relation.includes_values
+        original_selects = relation.select_values
+        relation.select_values = []
+        relation.includes_values = []
+      
+        id_only_relation = relation.select("#{table_name}.id")
+    
+        # does their original query but only for id fields
+        id_results = connection.select_all(id_only_relation.to_sql)
+      
+        used_ids = {}
+      
+        while( used_ids.length < max_items && used_ids.length < id_results.length )
+          rand_num = rand( id_results.length )
+          used_ids[rand_num] = id_results[rand_num]["id"]
+        end
 
-    
-    def random
-      # take out limit from relation to use later
-    
-      relation = clone
-    
-      max_items = 15
-      max_items = relation.limit_value if relation.limit_value
-      relation.limit_value = nil
-      original_includes = relation.includes_values
-    
-      # Get raw sql string and replace * with id
-      sql = relation.to_sql.sub("*", "id")
-      puts "raw sql: #{sql}"
-      id_results = ActiveRecord::Base.connection.select_all(sql)
-    
-      while( used_ids.length < max_items && used_ids.length < id_results.length )
-        rand_num = rand( id_results.length )
-        used_ids[rand_num] = id_results[rand_num]["id"]
+        includes(original_includes).find_all_by_id(used_ids.values)
       end
 
+    end # Relation
+    
+    module Base
+      
+      # Class method
+      def random(max_items = 1)
+        relation.random(max_items)
+      end
+      
+    end # Base
+    
+    
+  end # ActiveRecord
+  
+end # Randumb
 
-      includes(original_includes).find_all_by_id(used_ids)
-    end
-  
-  
-  
-  end
-
+# Mix it in
+class ActiveRecord::Relation
+  include Randumb::ActiveRecord::Relation
 end
 
-
-ActiveRecord::Relation.class_eval do
-  # = Active Record Relation
-    include Randumb
+class ActiveRecord::Base
+  extend Randumb::ActiveRecord::Base
 end
