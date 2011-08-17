@@ -41,6 +41,55 @@ class TestRandumb < Test::Unit::TestCase
       should "respect limits and orders" do
         assert_equal [@fiona_apple], Artist.order("views desc").limit(1).random
       end
+      
+      should "respect selecting certain columns" do
+        assert_equal 3, Artist.find(@fiona_apple.id).views
+        
+        artists = Artist.select(:name).random(3)
+        assert_equal false, artists.first.name.nil?
+        assert_raise (ActiveModel::MissingAttributeError) { artists.first.views }
+      end
+      
+      should "select all 3 if we want them" do
+        random_artists = Artist.random(10)
+        assert_equal 3, random_artists.length
+        assert_equal true, random_artists.include?(@high_on_fire)
+        assert_equal true, random_artists.include?(@fiona_apple)
+        assert_equal true, random_artists.include?(@magnetic_fields)
+      end
+      
+      
+      context "with some albums" do
+        setup do
+          @tidal = Album.make!(:name => "Tidal", :artist => @fiona_apple)
+          @extraordinary_machine = Album.make!(:name => "Extraordinary Machine", :artist => @fiona_apple)
+          @sixty_nine_love_songs = Album.make!(:name => "69 Love Songs", :artist => @magnetic_fields)
+          @snakes_for_the_divine = Album.make!(:name => "Snakes For the Divine", :artist => @high_on_fire)
+        end
+        
+        
+        should "work with includes" do
+          artists =  Artist.includes(:albums).random(10)
+          fiona_apple = artists.find{|a| a.name == "Fiona Apple"}
+          # if I add a new album now, it shouldn't be in the albums assocation yet b/c it was already loaded
+          Album.make!(:name => "When The Pawn", :artist => @fiona_apple)
+          
+          assert_equal 2, fiona_apple.albums.length
+          assert_equal 3, @fiona_apple.reload.albums.length
+        end
+        
+        should "work with joins" do
+          albums = Album.joins(:artist).where("artists.views > 1").random(3)
+          
+          assert_equal 3, albums.length
+          assert_equal false, albums.include?(@snakes_for_the_divine) 
+          assert_equal true, albums.include?(@tidal)
+          assert_equal true, albums.include?(@extraordinary_machine)
+          assert_equal true, albums.include?(@sixty_nine_love_songs)
+        end
+      end
+      
+      
     end
     
   end

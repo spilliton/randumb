@@ -22,7 +22,7 @@ ActiveRecord::Base.silence do
   load File.join(FIXTURES_PATH, 'schema.rb')
 end
 
-Fixtures.create_fixtures(FIXTURES_PATH, ActiveRecord::Base.connection.tables)
+#Fixtures.create_fixtures(FIXTURES_PATH, ActiveRecord::Base.connection.tables)
 
 require File.expand_path(File.dirname(__FILE__) + "/blueprints")
 

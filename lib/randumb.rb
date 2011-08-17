@@ -13,24 +13,26 @@ module Randumb
     
         relation = clone
       
+        # store these for including at the end
         original_includes = relation.includes_values
         original_selects = relation.select_values
+        
+        # clear these for our id only query
         relation.select_values = []
         relation.includes_values = []
       
-        id_only_relation = relation.select("#{table_name}.id")
-    
         # does their original query but only for id fields
+        id_only_relation = relation.select("#{table_name}.id")
         id_results = connection.select_all(id_only_relation.to_sql)
       
-        used_ids = {}
+        ids = {}
       
-        while( used_ids.length < max_items && used_ids.length < id_results.length )
-          rand_num = rand( id_results.length )
-          used_ids[rand_num] = id_results[rand_num]["id"]
+        while( ids.length < max_items && ids.length < id_results.length )
+          rand_index = rand( id_results.length )
+          ids[rand_index] = id_results[rand_index]["id"] unless ids.has_key?(rand_index)
         end
 
-        includes(original_includes).find_all_by_id(used_ids.values)
+        klass.select(original_selects).includes(original_includes).find_all_by_id(ids.values)
       end
 
     end # Relation
