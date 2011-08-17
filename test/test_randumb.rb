@@ -50,6 +50,10 @@ class TestRandumb < Test::Unit::TestCase
         assert_raise (ActiveModel::MissingAttributeError) { artists.first.views }
       end
       
+      should "respect scopes" do
+        assert_equal [@fiona_apple], Artist.at_least_three_views.random(3)
+      end
+      
       should "select all 3 if we want them" do
         random_artists = Artist.random(10)
         assert_equal 3, random_artists.length
