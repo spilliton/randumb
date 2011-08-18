@@ -7,7 +7,5 @@ Gem::Specification.new do |s|
   s.summary     = "Adds the ability to pull random records from ActiveRecord"
   s.files       = ["lib/randumb.rb"]
  
-  s.required_rubygems_version = ">= 1.6.6"
- 
   s.add_development_dependency "rspec"
 end

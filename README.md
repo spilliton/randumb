@@ -22,6 +22,8 @@ Artist.has_views.includes(:albums).random(10)
 ``` ruby
 ## Add the following to you Gemfile
 gem 'randumb'
+## Run this
+bundle install
 ```
 
 
