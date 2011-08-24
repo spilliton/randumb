@@ -18,8 +18,12 @@ Artist.has_views.includes(:albums).random(10)
 ```
 
 ``` ruby
-## returns a record if called without parameters, or parameter = 1
+## returns a record if called without parameters
 artist = Artist.random ## instead of artist = Artist.random.first
+
+## returns an array if called with parameters
+artists = Artist.random(3)  ## returns an array
+artists = Artist.random(1)  ## returns an array
 ```
 
 ## Install 

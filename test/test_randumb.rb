@@ -10,6 +10,7 @@ class TestRandumb < Test::Unit::TestCase
     should "should return empty array" do
       assert_equal 0, Artist.count
       assert_equal nil, Artist.random
+      assert_equal [], Artist.random(1)
       assert_equal [], Artist.limit(50).random
     end
     
@@ -25,6 +26,7 @@ class TestRandumb < Test::Unit::TestCase
     should "select only 1 record even when you request more" do
       assert_equal 1, Artist.count
       assert_equal @high_on_fire, Artist.random
+      assert_equal [@high_on_fire], Artist.random(1) 
       assert_equal [@high_on_fire], Artist.random(30) 
     end
     
@@ -40,6 +42,7 @@ class TestRandumb < Test::Unit::TestCase
       
       should "respect limits and orders" do
         assert_equal @fiona_apple, Artist.order("views desc").limit(1).random
+        assert_equal [@fiona_apple], Artist.order("views desc").limit(1).random(1)
       end
       
       should "respect selecting certain columns" do
@@ -51,7 +54,7 @@ class TestRandumb < Test::Unit::TestCase
       end
       
       should "respect scopes" do
-        assert_equal @fiona_apple, Artist.at_least_three_views.random(3)
+        assert_equal [@fiona_apple], Artist.at_least_three_views.random(3)
       end
       
       should "select all 3 if we want them" do

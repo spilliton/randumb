@@ -8,7 +8,11 @@ module Randumb
     
     module Relation
       
-      def random(max_items = 1)
+      def random(max_items = nil)
+        # return only the first record if method was called without parameters
+        return_first_record = max_items.nil?
+        max_items ||= 1
+
         # take out limit from relation to use later
     
         relation = clone
@@ -34,7 +38,7 @@ module Randumb
 
         relation = klass.select(original_selects).includes(original_includes).find_all_by_id(ids.values)
         
-        if max_items == 1
+        if return_first_record
           relation.first
         else
           relation
