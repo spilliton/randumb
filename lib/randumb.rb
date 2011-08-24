@@ -32,7 +32,13 @@ module Randumb
           ids[rand_index] = id_results[rand_index]["id"] unless ids.has_key?(rand_index)
         end
 
-        klass.select(original_selects).includes(original_includes).find_all_by_id(ids.values)
+        relation = klass.select(original_selects).includes(original_includes).find_all_by_id(ids.values)
+        
+        if max_items == 1
+          relation.first
+        else
+          relation
+        end
       end
 
     end # Relation
