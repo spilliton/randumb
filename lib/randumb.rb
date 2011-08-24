@@ -36,12 +36,12 @@ module Randumb
           ids[rand_index] = id_results[rand_index]["id"] unless ids.has_key?(rand_index)
         end
 
-        relation = klass.select(original_selects).includes(original_includes).find_all_by_id(ids.values)
-        
+        records = klass.select(original_selects).includes(original_includes).find_all_by_id(ids.values)
+                
         if return_first_record
-          relation.first
+          records.first
         else
-          relation
+          records
         end
       end
 
@@ -50,7 +50,7 @@ module Randumb
     module Base
       
       # Class method
-      def random(max_items = 1)
+      def random(max_items = nil)
         relation.random(max_items)
       end
       

@@ -11,7 +11,7 @@ class TestRandumb < Test::Unit::TestCase
       assert_equal 0, Artist.count
       assert_equal nil, Artist.random
       assert_equal [], Artist.random(1)
-      assert_equal [], Artist.limit(50).random
+      assert_equal nil, Artist.limit(50).random
     end
     
   end
