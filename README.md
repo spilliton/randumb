@@ -2,7 +2,7 @@
 
 randumb is a ruby gem that allows you to pull random records from ActiveRecord...fast!
 
-This gem requires rails 3 or greater.
+This gem requires ActiveRecord version 3.0.0 or greater.
 
 I built this for use on [Compare Vinyl][comparevinyl].  Check out the homepage to see it in action :)
 

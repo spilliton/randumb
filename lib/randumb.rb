@@ -35,8 +35,11 @@ module Randumb
           rand_index = rand( id_results.length )
           ids[rand_index] = id_results[rand_index]["id"] unless ids.has_key?(rand_index)
         end
-
-        records = klass.select(original_selects).includes(original_includes).find_all_by_id(ids.values)
+  
+        the_scope = klass.includes(original_includes)
+        # specifying empty selects caused bug in rails 3.0.0/3.0.1
+        the_scope = the_scope.select(original_selects) unless original_selects.empty? 
+        records = the_scope.find_all_by_id(ids.values)
                 
         if return_first_record
           records.first
@@ -60,6 +63,7 @@ module Randumb
   end # ActiveRecord
   
 end # Randumb
+
 
 # Mix it in
 class ActiveRecord::Relation
