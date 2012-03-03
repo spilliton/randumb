@@ -26,13 +26,13 @@ end
 
 require File.expand_path(File.dirname(__FILE__) + "/blueprints")
 
-class ActiveSupport::TestCase
+# class ActiveSupport::TestCase
   
-  # For machinist
-  Machinist.configure do |config|
-    config.cache_objects = false
-  end
+#   # For machinist
+#   Machinist.configure do |config|
+#     config.cache_objects = false
+#   end
   
-  setup { Machinist.reset_before_test }
+#   setup { Machinist.reset_before_test }
   
-end
+# end
