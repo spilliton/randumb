@@ -28,7 +28,7 @@ module Randumb
         if max_items == 1 && id_results.length > 0
           ids = [ id_results[ rand(id_results.length) ]['id'] ]
         else
-          ids = id_results.shuffle[0,max_items].collect { |h| h['id'] }
+          ids = id_results.shuffle![0,max_items].collect!{ |h| h['id'] }
         end
   
         # build scope for final query
@@ -39,7 +39,7 @@ module Randumb
 
         # get the records and shuffle since the order of the ids
         # passed to find_all_by_id isn't retained in the result set
-        records = the_scope.find_all_by_id(ids).shuffle
+        records = the_scope.find_all_by_id(ids).shuffle!
                 
         # return first record if method was called without parameters
         if return_first_record
