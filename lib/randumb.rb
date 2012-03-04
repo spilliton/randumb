@@ -37,8 +37,9 @@ module Randumb
         # specifying empty selects caused bug in rails 3.0.0/3.0.1
         the_scope = the_scope.select(original_selects) unless original_selects.empty? 
 
-        # get dem records
-        records = the_scope.find_all_by_id(ids)
+        # get the records and shuffle since the order of the ids
+        # passed to find_all_by_id isn't retained in the result set
+        records = the_scope.find_all_by_id(ids).shuffle
                 
         # return first record if method was called without parameters
         if return_first_record

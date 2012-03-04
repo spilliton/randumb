@@ -33,7 +33,7 @@ class RandumbTest < Test::Unit::TestCase
     should "not return a record that doesnt match where" do
       assert_equal nil, Artist.where(:name => "Wang Is Burning").random
     end
-    
+
     context "3 records in table" do
       setup do
         @fiona_apple = Artist.make!(:name => "Fiona Apple", :views => 3)
@@ -64,8 +64,7 @@ class RandumbTest < Test::Unit::TestCase
         assert_equal true, random_artists.include?(@fiona_apple)
         assert_equal true, random_artists.include?(@magnetic_fields)
       end
-      
-      
+            
       context "with some albums" do
         setup do
           @tidal = Album.make!(:name => "Tidal", :artist => @fiona_apple)
@@ -96,9 +95,30 @@ class RandumbTest < Test::Unit::TestCase
         end
       end
       
-      
     end
     
+  end
+
+  context "2 records in table" do
+    setup do
+      @hum = Artist.make!(:name => "Hum", :views => 3)
+      @minutemen = Artist.make!(:name => "Minutemen", :views => 2)
+    end
+
+    should "eventually render the 2 possible orders" do
+      order1 = [@hum, @minutemen]
+      order2 = [@minutemen, @hum]
+      order1_found = false
+      order2_found = false
+      100.times do
+        order = Artist.random(2) 
+        order1_found = true if order == order1
+        order2_found = true if order == order2
+        break if order1_found && order2_found
+      end
+      assert order1_found
+      assert order2_found
+    end
   end
   
 end
