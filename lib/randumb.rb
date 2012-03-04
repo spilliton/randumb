@@ -25,7 +25,11 @@ module Randumb
         id_results = connection.select_all(id_only_relation.to_sql)
       
         # get requested number of random ids
-        ids = id_results.shuffle[0,max_items].collect { |h| h['id'] }
+        if max_items == 1 && id_results.length > 0
+          ids = [ id_results[ rand(id_results.length) ]['id'] ]
+        else
+          ids = id_results.shuffle[0,max_items].collect { |h| h['id'] }
+        end
   
         # build scope for final query
         the_scope = klass.includes(original_includes)
@@ -36,7 +40,7 @@ module Randumb
         # get dem records
         records = the_scope.find_all_by_id(ids)
                 
-        # return only the first record if method was called without parameters
+        # return first record if method was called without parameters
         if return_first_record
           records.first
         else
