@@ -1,5 +1,7 @@
 # randumb
 
+[![Build Status](https://secure.travis-ci.org/spilliton/randumb.png)](http://travis-ci.org/spilliton/randumb)
+
 randumb is a ruby gem that allows you to pull random records from ActiveRecord...fast!
 
 This gem requires ActiveRecord version 3.0.0 or greater.
