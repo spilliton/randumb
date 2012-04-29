@@ -7,6 +7,6 @@ gem 'rake'
 group :tests do
   gem 'sqlite3', '1.3.5'
   gem 'shoulda'
-  gem 'machinist', '>= 2.0.0.beta2'
+  gem 'factory_girl', "~> 3.0"
   gem 'faker'
 end

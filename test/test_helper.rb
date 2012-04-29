@@ -2,37 +2,44 @@ $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 require 'rubygems'
 require 'test/unit'
 require 'shoulda'
+require 'factory_girl'
 require 'faker'
 require 'active_record'
-require 'active_record/fixtures'
+require 'active_support/dependencies'
+require 'active_support/core_ext/logger'
+# require 'active_record/fixtures'
 require 'randumb'
 
-FIXTURES_PATH = File.join(File.dirname(__FILE__), 'fixtures')
+MODELS_PATH = File.join(File.dirname(__FILE__), 'models')
 
+
+# establish connection
+ActiveRecord::Base.logger = Logger.new(STDERR)
+ActiveRecord::Base.logger.level = Logger::WARN
 ActiveRecord::Base.establish_connection(
   :adapter => 'sqlite3',
   :database => ':memory:'
 )
 
-dep = defined?(ActiveSupport::Dependencies) ? ActiveSupport::Dependencies : ::Dependencies
-dep.autoload_paths.unshift FIXTURES_PATH
-
-ActiveRecord::Base.silence do
-  ActiveRecord::Migration.verbose = false
-  load File.join(FIXTURES_PATH, 'schema.rb')
+ActiveRecord::Base.connection.create_table(:artists, :force => true) do |t|
+  t.string   "name"
+  t.integer  "views"
+  t.datetime "created_at"
+  t.datetime "updated_at"
 end
-
-#Fixtures.create_fixtures(FIXTURES_PATH, ActiveRecord::Base.connection.tables)
-
-require File.expand_path(File.dirname(__FILE__) + "/blueprints")
-
-# class ActiveSupport::TestCase
   
-#   # For machinist
-#   Machinist.configure do |config|
-#     config.cache_objects = false
-#   end
+ActiveRecord::Base.connection.create_table(:albums, :force => true) do |t|
+  t.string  "name"
+  t.integer "views"
+  t.integer "artist_id"
+  t.datetime "created_at"
+  t.datetime "updated_at"
+end
   
-#   setup { Machinist.reset_before_test }
-  
-# end
+# setup models for lazy load
+dep = defined?(ActiveSupport::Dependencies) ? ActiveSupport::Dependencies : ::Dependencies
+dep.autoload_paths.unshift MODELS_PATH
+
+# load factories now
+require 'test/models/factories'
+

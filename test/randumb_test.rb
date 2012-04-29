@@ -20,7 +20,7 @@ class RandumbTest < Test::Unit::TestCase
   context "1 record in the table" do
     setup do
       Artist.delete_all("id > -1")
-      @high_on_fire = Artist.make!(:name => "High On Fire", :views => 1)
+      @high_on_fire = FactoryGirl.create(:artist, :name => "High On Fire", :views => 1)
     end
     
     should "select only 1 record even when you request more" do
@@ -36,8 +36,8 @@ class RandumbTest < Test::Unit::TestCase
 
     context "3 records in table" do
       setup do
-        @fiona_apple = Artist.make!(:name => "Fiona Apple", :views => 3)
-        @magnetic_fields = Artist.make!(:name => "The Magnetic Fields", :views => 2)
+        @fiona_apple = FactoryGirl.create(:artist, :name => "Fiona Apple", :views => 3)
+        @magnetic_fields = FactoryGirl.create(:artist, :name => "The Magnetic Fields", :views => 2)
       end
       
       should "respect limits and orders" do
@@ -67,10 +67,10 @@ class RandumbTest < Test::Unit::TestCase
             
       context "with some albums" do
         setup do
-          @tidal = Album.make!(:name => "Tidal", :artist => @fiona_apple)
-          @extraordinary_machine = Album.make!(:name => "Extraordinary Machine", :artist => @fiona_apple)
-          @sixty_nine_love_songs = Album.make!(:name => "69 Love Songs", :artist => @magnetic_fields)
-          @snakes_for_the_divine = Album.make!(:name => "Snakes For the Divine", :artist => @high_on_fire)
+          @tidal = FactoryGirl.create(:album, :name => "Tidal", :artist => @fiona_apple)
+          @extraordinary_machine = FactoryGirl.create(:album, :name => "Extraordinary Machine", :artist => @fiona_apple)
+          @sixty_nine_love_songs = FactoryGirl.create(:album, :name => "69 Love Songs", :artist => @magnetic_fields)
+          @snakes_for_the_divine = FactoryGirl.create(:album, :name => "Snakes For the Divine", :artist => @high_on_fire)
         end
         
         
@@ -78,7 +78,7 @@ class RandumbTest < Test::Unit::TestCase
           artists =  Artist.includes(:albums).random(10)
           fiona_apple = artists.find{|a| a.name == "Fiona Apple"}
           # if I add a new album now, it shouldn't be in the albums assocation yet b/c it was already loaded
-          Album.make!(:name => "When The Pawn", :artist => @fiona_apple)
+          FactoryGirl.create(:album, :name => "When The Pawn", :artist => @fiona_apple)
           
           assert_equal 2, fiona_apple.albums.length
           assert_equal 3, @fiona_apple.reload.albums.length
@@ -101,8 +101,8 @@ class RandumbTest < Test::Unit::TestCase
 
   context "2 records in table" do
     setup do
-      @hum = Artist.make!(:name => "Hum", :views => 3)
-      @minutemen = Artist.make!(:name => "Minutemen", :views => 2)
+      @hum = FactoryGirl.create(:artist, :name => "Hum", :views => 3)
+      @minutemen = FactoryGirl.create(:artist, :name => "Minutemen", :views => 2)
     end
 
     should "eventually render the 2 possible orders" do

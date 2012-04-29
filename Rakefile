@@ -6,11 +6,9 @@ Bundler::GemHelper.install_tasks
 require 'rake'
 require 'rake/testtask'
 
-task :default => [:test_units]
+task :default => [:test]
 
-desc "Run basic tests"
-Rake::TestTask.new("test_units") do |t|
-  t.pattern = 'test/randumb_test.rb'
-  t.verbose = true
-  t.warning = true
+desc "Run unit tests."
+task :test do
+  ruby "test/randumb_test.rb"
 end
