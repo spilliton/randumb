@@ -6,7 +6,7 @@ gem 'rake'
 
 group :tests do
   gem 'sqlite3', '1.3.5'
-  gem 'mysql2'
+  gem 'activerecord-mysql2-adapter'
   gem 'pg'
   gem 'shoulda'
   gem 'factory_girl', "~> 3.0"
