@@ -13,13 +13,24 @@ require 'randumb'
 MODELS_PATH = File.join(File.dirname(__FILE__), 'models')
 
 
-# establish connection
 ActiveRecord::Base.logger = Logger.new(STDERR)
 ActiveRecord::Base.logger.level = Logger::WARN
-ActiveRecord::Base.establish_connection(
-  :adapter => 'sqlite3',
-  :database => ':memory:'
-)
+
+config = YAML::load(File.open(File.expand_path("../databases.yml", __FILE__)))
+version = ActiveRecord::VERSION::STRING
+driver = (ENV["DB"] or "sqlite3").downcase
+in_memory = config[driver]["database"] == ":memory:"
+    
+# http://about.travis-ci.org/docs/user/database-setup/
+commands = {
+  "mysql"    => "mysql -e 'create database randumb_test;'",
+  "postgres" => "psql -c 'create database randumb_test;' -U postgres"
+}
+%x{#{commands[driver] || true}}
+    
+ActiveRecord::Base.establish_connection config[driver]
+puts "Using #{RUBY_VERSION} AR #{version} with #{driver}"
+
 
 ActiveRecord::Base.connection.create_table(:artists, :force => true) do |t|
   t.string   "name"

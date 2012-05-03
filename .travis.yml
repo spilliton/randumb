@@ -1,3 +1,10 @@
 language: ruby
 rvm:
   - 1.9.3
+
+env:
+  - DB=postgres
+  - DB=mysql
+  - DB=sqlite3
+
+  # https://github.com/norman/friendly_id/blob/master/.travis.yml
