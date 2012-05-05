@@ -12,40 +12,23 @@ module Randumb
         max_items ||= 1
         relation = clone
       
-        # store these for including on final scope
-        original_includes = relation.includes_values
-        original_selects = relation.select_values
-        
-        # clear these for our id only query
-        relation.select_values = []
-        relation.includes_values = []
-      
-        # do original query but only for id field
-        id_only_relation = relation.select("#{table_name}.id")
-        id_results = connection.select_all(id_only_relation.to_sql)
-      
-        # get requested number of random ids
-        if max_items == 1 && id_results.length > 0
-          ids = [ id_results[ rand(id_results.length) ]['id'] ]
+        case connection.adapter_name
+        when "SQLite", "PostgreSQL"
+          rand_syntax = "RANDOM()"
+        when "MySQL"
+          rand_syntax = "RAND()"
         else
-          ids = id_results.shuffle![0,max_items].collect!{ |h| h['id'] }
+          throw new Exception("ActiveRecord adapter: '#{connection.adapter_name}' not supported by randumb.  Send a pull request or open a ticket: https://github.com/spilliton/randumb")
         end
-  
-        # build scope for final query
-        the_scope = klass.includes(original_includes)
 
-        # specifying empty selects caused bug in rails 3.0.0/3.0.1
-        the_scope = the_scope.select(original_selects) unless original_selects.empty? 
-
-        # get the records and shuffle since the order of the ids
-        # passed to find_all_by_id isn't retained in the result set
-        records = the_scope.find_all_by_id(ids).shuffle!
+        the_scope = relation.order(rand_syntax)
+        the_scope = the_scope.limit(max_items) unless relation.limit_value && relation.limit_value < max_items
                 
         # return first record if method was called without parameters
         if return_first_record
-          records.first
+          the_scope.first
         else
-          records
+          the_scope.all
         end
       end
 

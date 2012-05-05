@@ -4,7 +4,7 @@ gem 'activesupport', '3.0.0'
 gem 'activerecord', '3.0.0'
 gem 'rake'
 
-group :tests do
+group :test do
   gem 'sqlite3', '1.3.5'
   gem 'mysql2', '~> 0.2.0'
   gem 'pg'
