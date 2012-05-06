@@ -2,13 +2,11 @@
 
 [![Build Status](https://secure.travis-ci.org/spilliton/randumb.png)](http://travis-ci.org/spilliton/randumb)
 
-randumb is a ruby gem that allows you to easily pull random records from ActiveRecord
+randumb is a ruby gem that allows you to easily pull random records via ActiveRecord
 
-This gem requires ActiveRecord version 3.0.0 or greater.
+Requires ActiveRecord version 3.0.0 or greater
 
-I built this for use on [Compare Vinyl][comparevinyl].  Check out the homepage to see it in action :)
-
-## Example Usage
+## Usage
 
 ``` ruby
 # returns a single record when called without parameters
@@ -16,7 +14,7 @@ Artist.random # returns instance of Artist if there are any, otherwise nil
 
 # returns an array if called with an integer param
 Artist.random(3)  # returns an array of Artists
-Artist.random(1)  # also returns an array of Artists
+Artist.random(1)  # returns an array containing one Artist
 ```
 
 ``` ruby
@@ -30,6 +28,7 @@ Artist.has_views.includes(:albums).where(["created_at > ?", 2.days.ago]).random(
 As of version 0.2.0, randumb works by tacking on an additional RANDOM() order to the scope.
 This means it will have the least amount of sort precedence if you are already including other ordering.
 
+I built this for use on [Compare Vinyl][comparevinyl].  Check out the homepage to see it in action :)
 
 ## Install 
 
