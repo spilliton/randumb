@@ -40,9 +40,14 @@ class RandumbTest < Test::Unit::TestCase
         @magnetic_fields = FactoryGirl.create(:artist, :name => "The Magnetic Fields", :views => 2)
       end
       
-      should "respect limits and orders" do
-        assert_equal @fiona_apple, Artist.order("views desc").limit(1).random
-        assert_equal [@fiona_apple], Artist.order("views desc").limit(1).random(1)
+      should "apply randomness after other orders" do
+        assert_equal @fiona_apple, Artist.order("views desc").random
+        assert_equal [@fiona_apple, @magnetic_fields], Artist.order("views desc").random(2)
+      end
+
+      should "take smaller limit if one is provided in scope" do
+        assert_equal 2, Artist.limit(2).random(3).length
+        assert_equal 2, Artist.limit(3).random(2).length
       end
       
       should "respect selecting certain columns" do
