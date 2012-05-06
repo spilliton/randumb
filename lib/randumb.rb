@@ -12,10 +12,9 @@ module Randumb
         max_items ||= 1
         relation = clone
       
-        case connection.adapter_name
-        when "SQLite", "PostgreSQL"
+        if connection.adapter_name ~= /sqlite/i || connection.adapter_name ~= /postgres/i
           rand_syntax = "RANDOM()"
-        when "MySQL"
+        elsif connection.adapter_name ~= /mysql/i
           rand_syntax = "RAND()"
         else
           raise Exception, "ActiveRecord adapter: '#{connection.adapter_name}' not supported by randumb.  Send a pull request or open a ticket: https://github.com/spilliton/randumb"
