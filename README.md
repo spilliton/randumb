@@ -2,7 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/spilliton/randumb.png)](http://travis-ci.org/spilliton/randumb)
 
-randumb is a ruby gem that allows you to pull random records from ActiveRecord...fast!
+randumb is a ruby gem that allows you to easily pull random records from ActiveRecord
 
 This gem requires ActiveRecord version 3.0.0 or greater.
 
@@ -11,29 +11,32 @@ I built this for use on [Compare Vinyl][comparevinyl].  Check out the homepage t
 ## Example Usage
 
 ``` ruby
-## randumb works the same as active records "all, first, and last" methods
-## with no params, it will pull back one random record
-Artist.random
-## you can also put it at the end of scopings and relations
-## passing an integer will pull that many records back in random order (unless your query brings back less records)
-Artist.has_views.includes(:albums).random(10)
+## returns a single record when called without parameters
+Artist.random ## returns instance of Artist if there are any, otherwise nil
+
+## returns an array if called with an integer param
+Artist.random(3)  ## returns an array of Artists
+Artist.random(1)  ## also returns an array of Artists
 ```
 
 ``` ruby
-## returns a record if called without parameters
-artist = Artist.random ## instead of artist = Artist.random.first
-
-## returns an array if called with parameters
-artists = Artist.random(3)  ## returns an array
-artists = Artist.random(1)  ## returns an array
+## randumb works like the active record "all, first, and last" methods
+## so you can put it at the end of scopes and relations
+Artist.has_views.includes(:albums).where(["created_at > ?", 2.days.ago]).random(10)
+## in the prior example, if only 5 records met the where conditions, 
+## randumb will return an array with those 5 records in random order
 ```
+
+As of version 0.2.0, randumb works by tacking on an additional RANDOM() order to the scope.
+This means it will have the least amount of sort precedence if you are already including other ordering.
+
 
 ## Install 
 
 ``` ruby
 ## Add the following to you Gemfile
 gem 'randumb'
-## Run this
+## Update your bundle
 bundle install
 ```
 
