@@ -18,7 +18,7 @@ module Randumb
         when "MySQL"
           rand_syntax = "RAND()"
         else
-          throw new Exception("ActiveRecord adapter: '#{connection.adapter_name}' not supported by randumb.  Send a pull request or open a ticket: https://github.com/spilliton/randumb")
+          raise Exception, "ActiveRecord adapter: '#{connection.adapter_name}' not supported by randumb.  Send a pull request or open a ticket: https://github.com/spilliton/randumb"
         end
 
         the_scope = relation.order(rand_syntax)
