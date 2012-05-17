@@ -4,7 +4,7 @@
 
 randumb is a ruby gem that allows you to easily pull random records via ActiveRecord
 
-Requires ActiveRecord version 3.0.0 or greater
+Requires ActiveRecord 3.0.0 or greater
 
 ## Usage
 
