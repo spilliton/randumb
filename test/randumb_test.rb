@@ -1,4 +1,5 @@
 $:.unshift '.';require File.dirname(__FILE__) + '/test_helper'
+require 'ransack'
 
 class RandumbTest < Test::Unit::TestCase
   
@@ -97,6 +98,13 @@ class RandumbTest < Test::Unit::TestCase
           assert_equal true, albums.include?(@tidal)
           assert_equal true, albums.include?(@extraordinary_machine)
           assert_equal true, albums.include?(@sixty_nine_love_songs)
+        end
+
+        should "work with ransack" do
+          random_artists = Artist.joins(:albums).search(:name_cont => 'a').result(:distinct => true).random(2)
+          assert_equal 2, random_artists.length
+          assert_equal true, random_artists.include?(@fiona_apple)
+          assert_equal true, random_artists.include?(@magnetic_fields)
         end
       end
       
