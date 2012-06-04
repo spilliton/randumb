@@ -125,5 +125,24 @@ class RandumbTest < Test::Unit::TestCase
       assert order2_found
     end
   end
-  
+
+  context "order by ranking_column" do
+    setup do
+      @view_counts = [1, 2, 4, 8, 16, 32]
+      @view_counts.each { |views| FactoryGirl.create(:artist, :views => views) }
+    end
+
+    should "order by ranking column" do
+      hits_per_views = Hash.new(0)
+      1000.times do
+        hits_per_views[Artist.random(1, "views").first.views] += 1
+      end
+      last_count = 0
+      @view_counts.each do |views|
+        hits = hits_per_views[views]
+        assert(hits > last_count, "There were an unexpected number of visits: #{hits_per_views.to_yaml}")
+        last_count = hits
+      end
+    end
+  end
 end
