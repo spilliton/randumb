@@ -39,5 +39,4 @@ gem 'randumb'
 bundle install
 ```
 
-
 [comparevinyl]: http://www.comparevinyl.com/
