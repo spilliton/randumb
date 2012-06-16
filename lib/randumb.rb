@@ -8,16 +8,16 @@ module Randumb
     module Relation
 
       # If the max_items argument is omitted, one random entity will be returned.
-      # If ranking_column is provided, that named column will be used, multiplied
-      # by the ranking scalar, to determine probability of order.
-      #
-      # * The ranking column must be numeric
-      # * Larger values of ranking_scalar will minimize randomness and select more by the ranking column
-      # * Setting ranking_scalar to values less than 1 will minimize the impact of ranking_column.
       def random(max_items = nil)
         random_weighted([], max_items)
       end
 
+      # If ranking_columns are provided, that named column or columns will be used, multiplied
+      # by the ranking scalar, to determine probability of order.
+      #
+      # * The ranking column must be numeric
+      # * Larger values of ranking_scalar will minimize randomness and select more by the ranking column(s)
+      # * Setting ranking_scalar to values less than 1 will minimize the impact of the ranking_column(s).
       def random_weighted(ranking_columns, max_items = nil, ranking_scalar = 1)
         relation = clone
         if connection.adapter_name =~ /sqlite/i || connection.adapter_name =~ /postgres/i
