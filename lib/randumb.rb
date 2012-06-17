@@ -9,16 +9,12 @@ module Randumb
 
       # If the max_items argument is omitted, one random entity will be returned.
       def random(max_items = nil)
-        random_weighted([], max_items)
+        random_weighted(nil, max_items)
       end
 
-      # If ranking_columns are provided, that named column or columns will be used, multiplied
-      # by the ranking scalar, to determine probability of order.
-      #
-      # * The ranking column must be numeric
-      # * Larger values of ranking_scalar will minimize randomness and select more by the ranking column(s)
-      # * Setting ranking_scalar to values less than 1 will minimize the impact of the ranking_column(s).
-      def random_weighted(ranking_columns, max_items = nil, ranking_scalar = 1)
+      # If ranking_column is provided, that named column wil be multiplied
+      # by a random number to determine probability of order. The ranking column must be numeric.
+      def random_weighted(ranking_column, max_items = nil)
         relation = clone
         if connection.adapter_name =~ /sqlite/i || connection.adapter_name =~ /postgres/i
           rand_syntax = "RANDOM()"
@@ -28,11 +24,10 @@ module Randumb
           raise Exception, "ActiveRecord adapter: '#{connection.adapter_name}' not supported by randumb.  Send a pull request or open a ticket: https://github.com/spilliton/randumb"
         end
 
-        order_clause = if ranking_columns.nil? || ranking_columns.empty?
+        order_clause = if ranking_column.nil?
                          rand_syntax
                        else
-                         columns = [ranking_columns].flatten.join(" * ") # <- supports singular column names
-                         "(#{rand_syntax} * #{columns} * #{ranking_scalar.to_i}) DESC"
+                         "(#{rand_syntax} * #{ranking_column}) DESC"
                        end
         the_scope = relation.order(order_clause)
         if max_items && (!relation.limit_value || relation.limit_value > max_items)
@@ -54,15 +49,15 @@ module Randumb
         relation.random(max_items)
       end
 
-      def random_weighted(ranking_columns, max_items = nil, ranking_scalar = 1)
-        relation.random_weighted(ranking_columns, max_items, ranking_scalar)
+      def random_weighted(ranking_column, max_items = nil)
+        relation.random_weighted(ranking_column, max_items)
       end
     end # Base
 
     module MethodMissingMagicks
       def method_missing(symbol, *args)
         if symbol.to_s =~ /^random_weighted_by_(\w+)$/
-          random_weighted($1.split("_and_"), *args)
+          random_weighted($1, *args)
         else
           super
         end

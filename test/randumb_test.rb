@@ -1,4 +1,4 @@
-$:.unshift '.';require File.dirname(__FILE__) + '/test_helper'
+$:.unshift '.'; require File.dirname(__FILE__) + '/test_helper'
 
 class RandumbTest < Test::Unit::TestCase
 
@@ -55,7 +55,7 @@ class RandumbTest < Test::Unit::TestCase
 
         artists = Artist.select(:name).random(3)
         assert_equal false, artists.first.name.nil?
-        assert_raise (ActiveModel::MissingAttributeError) { artists.first.views }
+        assert_raise (ActiveModel::MissingAttributeError) {artists.first.views}
       end
 
       should "respect scopes" do
@@ -81,7 +81,7 @@ class RandumbTest < Test::Unit::TestCase
 
         should "work with includes" do
           artists = Artist.includes(:albums).random(10)
-          fiona_apple = artists.find{|a| a.name == "Fiona Apple"}
+          fiona_apple = artists.find { |a| a.name == "Fiona Apple" }
           # if I add a new album now, it shouldn't be in the albums assocation yet b/c it was already loaded
           FactoryGirl.create(:album, :name => "When The Pawn", :artist => @fiona_apple)
 
@@ -128,7 +128,7 @@ class RandumbTest < Test::Unit::TestCase
 
   context "order by ranking_column" do
     setup do
-      @view_counts = [1, 2, 4, 8, 16, 32]
+      @view_counts = [1, 2, 3, 4, 5]
       @view_counts.each { |views| FactoryGirl.create(:artist, :views => views) }
     end
 
@@ -154,8 +154,36 @@ class RandumbTest < Test::Unit::TestCase
 
     should "order by ranking column with method_missing using max_items" do
       assert_hits_per_views do
-        result = Artist.random_weighted_by_views(5)
-        assert(result.size == 5)
+        result = Artist.random_weighted_by_views(6)
+        assert(result.size == 6)
+        result.first.views
+      end
+    end
+
+    should "LAST order should fail" do
+      if ENV['DB'] != 'sqlite3'
+        assert_raises(MiniTest::Assertion) do
+          assert_hits_per_views do
+            result = Artist.random_weighted_by_views(3)
+            assert(result.size == 3)
+            result.last.views
+          end
+        end
+      end
+    end
+
+    should "order by ranking column with method_missing using 1 max_items" do
+      assert_hits_per_views do
+        result = Artist.random_weighted_by_views(1)
+        assert(result.size == 1)
+        result.first.views
+      end
+    end
+
+    should "order randomly if the by ranking column with method_missing using 1 max_items" do
+      assert_hits_per_views do
+        result = Artist.random_weighted_by_views(1)
+        assert(result.size == 1)
         result.first.views
       end
     end
@@ -163,11 +191,10 @@ class RandumbTest < Test::Unit::TestCase
     def assert_hits_per_views
       hits_per_views = Hash.new
       @view_counts.each { |views| hits_per_views[views] = 0 }
-      2000.times do
+      1000.times do
         hits_per_views[yield] += 1
       end
       last_count = 0
-      puts hits_per_views.to_yaml
       @view_counts.each do |views|
         hits = hits_per_views[views]
         assert(hits >= last_count, "#{hits} > #{last_count} : There were an unexpected number of visits: #{hits_per_views.to_yaml}")
