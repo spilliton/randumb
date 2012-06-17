@@ -13,9 +13,7 @@ class RandumbTest < Test::Unit::TestCase
       assert_equal [], Artist.random(1)
       assert_equal nil, Artist.limit(50).random
     end
-
   end
-
 
   context "1 record in the table" do
     setup do
