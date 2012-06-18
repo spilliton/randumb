@@ -32,7 +32,7 @@ This means it will have the least amount of sort precedence if you are already i
 
 You can use ```random_weighted``` to favor certain instances more than others.
 
-If you want to favor showing higher-rated Movies, for example, your
+If you want to favor showing higher-rated Movies, for example, and your
 Movie model has a numeric ```score``` column, you can use ```Movie.random_weighted_by_score```.
 
 Higher-scored movies will be more likely to be returned than lower-scored movies, in proportion to their ```score```.
