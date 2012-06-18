@@ -10,11 +10,11 @@ Requires ActiveRecord 3.0.0 or greater
 
 ``` ruby
 # returns a single record when called without parameters
-Artist.random # returns instance of Artist if there are any, otherwise nil
+Artist.random # returns a random instance of Artist if there are any, otherwise nil
 
 # returns an array if called with an integer param
-Artist.random(3)  # returns an array of Artists
-Artist.random(1)  # returns an array containing one Artist
+Artist.random(3)  # returns an array of three Artists picked at random
+Artist.random(1)  # returns an array containing one random Artist
 ```
 
 ``` ruby
@@ -28,6 +28,18 @@ Artist.has_views.includes(:albums).where(["created_at > ?", 2.days.ago]).random(
 As of version 0.2.0, randumb works by tacking on an additional RANDOM() order to the scope.
 This means it will have the least amount of sort precedence if you are already including other ordering.
 
+### Stacking the deck
+
+You can use ```random_weighted``` to favor certain instances more than others.
+
+If you want to favor showing higher-rated Movies, for example, and your
+Movie model has a numeric ```score``` column, you can use ```Movie.random_weighted_by_score```.
+
+Higher-scored movies will be more likely to be returned than lower-scored movies, in proportion to their ```score```.
+
+
+## Why
+
 I built this for use on [Compare Vinyl][comparevinyl].  Check out the homepage to see it in action :)
 
 ## Install 
@@ -40,3 +52,9 @@ bundle install
 ```
 
 [comparevinyl]: http://www.comparevinyl.com/
+
+## Changelog
+
+### 0.3.0
+
+* Added ```random_weighted```
