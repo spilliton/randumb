@@ -11,4 +11,5 @@ task :default => [:test]
 desc "Run unit tests."
 task :test do
   ruby "test/randumb_test.rb"
+  ruby "test/weighted_test.rb"
 end

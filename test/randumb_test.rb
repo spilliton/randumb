@@ -2,22 +2,15 @@ $:.unshift '.'; require File.dirname(__FILE__) + '/test_helper'
 
 class RandumbTest < Test::Unit::TestCase
 
-  context "no records in the table" do
-    setup do
-      Artist.delete_all("id > -1")
-    end
-
-    should "should return empty array" do
-      assert_equal 0, Artist.count
-      assert_equal nil, Artist.random
-      assert_equal [], Artist.random(1)
-      assert_equal nil, Artist.limit(50).random
-    end
+  should "should return empty when no record in table" do
+    assert_equal 0, Artist.count
+    assert_equal nil, Artist.random
+    assert_equal [], Artist.random(1)
+    assert_equal nil, Artist.limit(50).random
   end
 
   context "1 record in the table" do
     setup do
-      Artist.delete_all("id > -1")
       @high_on_fire = FactoryGirl.create(:artist, :name => "High On Fire", :views => 1)
     end
 
@@ -124,80 +117,4 @@ class RandumbTest < Test::Unit::TestCase
     end
   end
 
-  context "order by ranking_column" do
-    setup do
-      @view_counts = [1, 2, 3, 4, 5]
-      @view_counts.each { |views| FactoryGirl.create(:artist, :views => views) }
-    end
-
-    should "order by ranking column with explicit method call" do
-      assert_hits_per_views do
-        Artist.random_weighted("views").views
-      end
-    end
-
-    should "order by ranking column with method_missing" do
-      assert_hits_per_views do
-        Artist.random_weighted_by_views.views
-      end
-    end
-
-    should "order by ranking column with explicit method call and max_items" do
-      assert_hits_per_views do
-        result = Artist.random_weighted("views", 5)
-        assert(result.size == 5)
-        result.first.views
-      end
-    end
-
-    should "order by ranking column with method_missing using max_items" do
-      assert_hits_per_views do
-        result = Artist.random_weighted_by_views(6)
-        assert(result.size == 6)
-        result.first.views
-      end
-    end
-
-    should "LAST order should fail" do
-      if ENV['DB'] != 'sqlite3'
-        assert_raises(MiniTest::Assertion) do
-          assert_hits_per_views do
-            result = Artist.random_weighted_by_views(3)
-            assert(result.size == 3)
-            result.last.views
-          end
-        end
-      end
-    end
-
-    should "order by ranking column with method_missing using 1 max_items" do
-      assert_hits_per_views do
-        result = Artist.random_weighted_by_views(1)
-        assert(result.size == 1)
-        result.first.views
-      end
-    end
-
-    should "order randomly if the by ranking column with method_missing using 1 max_items" do
-      assert_hits_per_views do
-        result = Artist.random_weighted_by_views(1)
-        assert(result.size == 1)
-        result.first.views
-      end
-    end
-
-    def assert_hits_per_views
-      hits_per_views = Hash.new
-      @view_counts.each { |views| hits_per_views[views] = 0 }
-      1000.times do
-        hits_per_views[yield] += 1
-      end
-      last_count = 0
-      @view_counts.each do |views|
-        hits = hits_per_views[views]
-        assert(hits >= last_count, "#{hits} > #{last_count} : There were an unexpected number of visits: #{hits_per_views.to_yaml}")
-        last_count = hits
-      end
-    end
-  end
 end

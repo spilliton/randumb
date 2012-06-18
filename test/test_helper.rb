@@ -35,6 +35,7 @@ puts "Using #{RUBY_VERSION} AR #{version} with #{driver}"
 ActiveRecord::Base.connection.create_table(:artists, :force => true) do |t|
   t.string   "name"
   t.integer  "views"
+  t.float    "rating"
   t.datetime "created_at"
   t.datetime "updated_at"
 end
@@ -53,4 +54,14 @@ dep.autoload_paths.unshift MODELS_PATH
 
 # load factories now
 require 'test/models/factories'
+
+# clear db for every test
+class Test::Unit::TestCase
+
+  def setup
+    Artist.delete_all("id > -1")
+    Album.delete_all("id > -1")
+  end
+
+end
 
