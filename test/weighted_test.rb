@@ -30,6 +30,16 @@ class WeightedTest < Test::Unit::TestCase
     assert_equal @artist, Artist.find_by_name('Spiritualized')
   end
 
+  should "respond to respond_to?" do
+    assert Artist.respond_to?(:random_weighted_by_views)
+    assert Artist.respond_to?(:random_weighted_by_xxxxxx)
+    assert Artist.at_least_three_views.respond_to?(:random_weighted_by_xxxxxx)
+  end
+
+  should "not interfere with active record dynamic methods that use respond_to?" do
+    assert Artist.respond_to?(:find_by_name)
+  end
+
 
   context "order by ranking_column" do
     setup do

@@ -78,6 +78,14 @@ module Randumb
           super
         end
       end
+
+      def respond_to?(symbol, include_private=false)
+        if symbol.to_s =~ /^random_weighted_by_(\w+)$/
+          true
+        else
+          super
+        end
+      end
     end
   end # ActiveRecord
 end # Randumb
