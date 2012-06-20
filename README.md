@@ -14,6 +14,7 @@ Artist.random(3)  # returns an array of three Artists picked at random
 Artist.random(1)  # returns an array containing one random Artist
 ```
 
+### Scopes
 ``` ruby
 # randumb works like the active record "all, first, and last" methods
 # so you can put it at the end of scopes and relations
