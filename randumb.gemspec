@@ -1,12 +1,17 @@
+# -*- encoding: utf-8 -*-
+$:.push File.expand_path("../lib", __FILE__)
+require "randumb/version"
+
 Gem::Specification.new do |s|
   s.name        = "randumb"
-  s.version     = "0.2.0"
+  s.version     = Randumb::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Zachary Kloepping"]
   s.homepage    = "https://github.com/spilliton/randumb"
   s.summary     = "Adds the ability to pull random records from ActiveRecord"
-  s.files       = ["lib/randumb.rb"]
- 
+  s.files       = Dir['lib/**/*.rb']
+  s.test_files  = Dir['test/**/*.rb']
+
   s.add_dependency 'activesupport', '>= 3.0.0'
   s.add_dependency 'activerecord', '>= 3.0.0'
   s.add_dependency 'rake'
