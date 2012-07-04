@@ -89,6 +89,12 @@ class RandumbTest < Test::Unit::TestCase
           assert_equal true, albums.include?(@extraordinary_machine)
           assert_equal true, albums.include?(@sixty_nine_love_songs)
         end
+
+        should "work with uniq" do
+          assert_equal 2, Album.uniq.random(2).length
+          assert_not_nil Album.uniq.random
+        end
+
       end
 
     end
