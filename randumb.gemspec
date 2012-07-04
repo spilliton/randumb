@@ -22,8 +22,7 @@ Gem::Specification.new do |s|
   when 'sqlite3'
     s.add_development_dependency 'sqlite3', '1.3.5' 
   when 'mysql'
-    # mysql was pulled into active record 3.1
-    # s.add_development_dependency 'mysql2', '~> 0.2.0'
+    s.add_development_dependency 'mysql2', '~> 0.3.11'
   when 'postgres'
     s.add_development_dependency 'pg'
   end
