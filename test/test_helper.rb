@@ -59,8 +59,8 @@ require 'test/models/factories'
 class Test::Unit::TestCase
 
   def setup
-    Artist.delete_all("id > -1")
-    Album.delete_all("id > -1")
+    Artist.delete_all
+    Album.delete_all
   end
 
 end
