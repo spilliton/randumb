@@ -91,8 +91,8 @@ class RandumbTest < Test::Unit::TestCase
         end
 
         should "work with uniq" do
-          assert_equal 2, Album.uniq.random(2).length
-          assert_not_nil Album.uniq.random
+          assert_equal 2, Artist.uniq.random(2).length
+          assert_not_nil Artist.uniq.random
         end
 
       end
