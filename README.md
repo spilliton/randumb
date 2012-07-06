@@ -52,11 +52,16 @@ Movie model has a numeric ```score``` column, you can do any of the the followin
 ``` ruby
 Movie.random_weighted(:score)      # 1 movie
 Movie.random_weighted_by_score     # 1 movie
+# Executes
+# select * from movies ORDER BY (score * RANDOM() DESC)
+
 Movie.random_weighted(:score, 10)  # array of 10 movies
 Movie.random_weighted_by_score(10) # array of 10 movies
+# Executes
+# select * from movies ORDER BY (score * RANDOM() DESC) LIMIT 10
 ```
 
-Higher-scored movies will be more likely to be returned than lower-scored movies, in proportion to their ```score``` column.
+Thus higher-scored movies will be more likely to be returned than lower-scored movies.
 
 ### Pick Your Poison
 

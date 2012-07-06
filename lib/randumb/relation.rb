@@ -48,8 +48,10 @@ module Randumb
                           rand_syntax
                         else
                           if connection.adapter_name =~ /sqlite/i
+                            # computer multiplication is faster than division I was once taught...so translate here
                             max_int = 9223372036854775807.0
-                            "(#{ranking_column} * (ABS(#{rand_syntax})/#{max_int}) ) DESC"
+                            multiplier = 1.0 / max_int 
+                            "(#{ranking_column} * ABS(#{rand_syntax} * #{multiplier}) ) DESC"
                           else
                             "(#{ranking_column} * #{rand_syntax}) DESC"
                           end
@@ -118,13 +120,9 @@ module Randumb
 
     end 
 
-
-
-
     
     # Class methods
     module Base
-      
       def random(max_items = nil)
         relation.random(max_items)
       end
@@ -136,13 +134,11 @@ module Randumb
       def random_by_id_shuffle(max_items = nil)
         relation.random_by_id_shuffle(max_items)
       end
-
     end 
 
 
     # These get registered as class and instance methods
     module MethodMissingMagicks
-
       def method_missing(symbol, *args)
         if symbol.to_s =~ /^random_weighted_by_(\w+)$/
           random_weighted($1, *args)
@@ -158,7 +154,6 @@ module Randumb
           super
         end
       end
-
     end
 
   end # ActiveRecord
