@@ -40,6 +40,8 @@ randumb works by tacking on an additional ORDER BY RANDOM() to your query.
 
 It will have the least amount of sort precedence if you are already including other ordering.
 
+## Advanced Usage
+
 ### Stacking the Deck
 
 You can use ```random_weighted``` to favor certain instances more than others.
@@ -67,17 +69,17 @@ You cannot apply weighting when using this method.  Limits and orders also behav
 artists = Artist.limit(100).order("view_count DESC").random_by_id_shuffle(5)
 
 # Executes:
-# select artist.id from artists ORDER BY view_count DESC LIMIT 100
+# select artist.id from artists ORDER BY view_count DESC LIMIT 5
 # ...randomly choose 5 ids from the result in ruby...
 # select * from artists WHERE id in (12, 2334, ...)
 ```
 
-Compare this to the default ```random()``` method which will use the lesser of the limits you provide, and apply order by random() sorting after any other sorts you provide.
+Compare this to the default ```random()``` method which will use the lesser of the limits you provide and apply order by random() sorting after any other orders you provide.
 
 ``` ruby
 # I want the top 5 artists and I'm pointlessly providing a limit of 100
-# plus I want artists with the same view count to be sorted randomy.
-# This is *clearly* a silly thing to do.
+# plus I want artists with the same view count to be sorted randomly.
+# This is a silly thing to do.
 artists = Artist.limit(100).order("view_count DESC").random(5)
 
 # Executes:
