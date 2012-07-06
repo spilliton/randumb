@@ -2,11 +2,26 @@ $:.unshift '.'; require File.dirname(__FILE__) + '/test_helper'
 
 class RandumbTest < Test::Unit::TestCase
 
+  def assert_equal_for_both_methods(expected, obj, params = nil)
+    assert_equal expected, obj.send(:random, params), "when calling random"
+    assert_equal expected, obj.send(:random_by_id_shuffle, params), "when calling random_by_id_shuffle"
+  end
+
+
   should "should return empty when no record in table" do
     assert_equal 0, Artist.count
-    assert_equal nil, Artist.random
-    assert_equal [], Artist.random(1)
-    assert_equal nil, Artist.limit(50).random
+
+    assert_equal_for_both_methods nil, Artist
+    # above is equivalent to:
+    # assert_equal nil, Artist.random
+    # assert_equal nil, Artist.random_by_id_shuffle
+
+    assert_equal_for_both_methods [], Artist, 1
+    # above is equivalent to:
+    # assert_equal [], Artist.random(1)
+    # assert_equal [], Artist.random_by_id_shuffle(1)
+
+    assert_equal_for_both_methods nil, Artist.limit(50)
   end
 
   context "1 record in the table" do
@@ -16,13 +31,14 @@ class RandumbTest < Test::Unit::TestCase
 
     should "select only 1 record even when you request more" do
       assert_equal 1, Artist.count
-      assert_equal @high_on_fire, Artist.random
-      assert_equal [@high_on_fire], Artist.random(1)
-      assert_equal [@high_on_fire], Artist.random(30)
+
+      assert_equal_for_both_methods @high_on_fire, Artist
+      assert_equal_for_both_methods [@high_on_fire], Artist, 1
+      assert_equal_for_both_methods [@high_on_fire], Artist, 30
     end
 
     should "not return a record that doesnt match where" do
-      assert_equal nil, Artist.where(:name => "Wang Is Burning").random
+      assert_equal_for_both_methods nil, Artist.where(:name => "The Little Gentlemen")
     end
 
     context "3 records in table" do
@@ -31,14 +47,17 @@ class RandumbTest < Test::Unit::TestCase
         @magnetic_fields = FactoryGirl.create(:artist, :name => "The Magnetic Fields", :views => 2)
       end
 
-      should "apply randomness after other orders" do
+      should "apply randomness after other orders when using sql method" do
         assert_equal @fiona_apple, Artist.order("views desc").random
         assert_equal [@fiona_apple, @magnetic_fields], Artist.order("views desc").random(2)
       end
 
       should "take smaller limit if one is provided in scope" do
         assert_equal 2, Artist.limit(2).random(3).length
+        assert_equal 2, Artist.limit(2).random_by_id_shuffle(3).length
+
         assert_equal 2, Artist.limit(3).random(2).length
+        assert_equal 2, Artist.limit(3).random_by_id_shuffle(2).length
       end
 
       should "respect selecting certain columns" do
@@ -47,14 +66,24 @@ class RandumbTest < Test::Unit::TestCase
         artists = Artist.select(:name).random(3)
         assert_equal false, artists.first.name.nil?
         assert_raise (ActiveModel::MissingAttributeError) {artists.first.views}
+
+        artists = Artist.select(:name).random_by_id_shuffle(3)
+        assert_equal false, artists.first.name.nil?
+        assert_raise (ActiveModel::MissingAttributeError) {artists.first.views}
       end
 
       should "respect scopes" do
-        assert_equal [@fiona_apple], Artist.at_least_three_views.random(3)
+        assert_equal_for_both_methods [@fiona_apple], Artist.at_least_three_views, 3
       end
 
-      should "select all 3 if we want them" do
+      should "select only as many as in the db if we request more" do
         random_artists = Artist.random(10)
+        assert_equal 3, random_artists.length
+        assert_equal true, random_artists.include?(@high_on_fire)
+        assert_equal true, random_artists.include?(@fiona_apple)
+        assert_equal true, random_artists.include?(@magnetic_fields)
+
+        random_artists = Artist.random_by_id_shuffle(10)
         assert_equal 3, random_artists.length
         assert_equal true, random_artists.include?(@high_on_fire)
         assert_equal true, random_artists.include?(@fiona_apple)
@@ -70,7 +99,7 @@ class RandumbTest < Test::Unit::TestCase
         end
 
 
-        should "work with includes" do
+        should "work with includes for default method" do
           artists = Artist.includes(:albums).random(10)
           fiona_apple = artists.find { |a| a.name == "Fiona Apple" }
           # if I add a new album now, it shouldn't be in the albums assocation yet b/c it was already loaded
@@ -80,8 +109,28 @@ class RandumbTest < Test::Unit::TestCase
           assert_equal 3, @fiona_apple.reload.albums.length
         end
 
-        should "work with joins" do
+        should "work with includes for shuffle method" do
+          artists = Artist.includes(:albums).random_by_id_shuffle(10)
+          fiona_apple = artists.find { |a| a.name == "Fiona Apple" }
+          # if I add a new album now, it shouldn't be in the albums assocation yet b/c it was already loaded
+          FactoryGirl.create(:album, :name => "When The Pawn", :artist => @fiona_apple)
+
+          assert_equal 2, fiona_apple.albums.length
+          assert_equal 3, @fiona_apple.reload.albums.length
+        end
+
+        should "work with joins for default method" do
           albums = Album.joins(:artist).where("artists.views > 1").random(3)
+
+          assert_equal 3, albums.length
+          assert_equal false, albums.include?(@snakes_for_the_divine)
+          assert_equal true, albums.include?(@tidal)
+          assert_equal true, albums.include?(@extraordinary_machine)
+          assert_equal true, albums.include?(@sixty_nine_love_songs)
+        end
+
+        should "work with joins for shuffle method" do
+          albums = Album.joins(:artist).where("artists.views > 1").random_by_id_shuffle(3)
 
           assert_equal 3, albums.length
           assert_equal false, albums.include?(@snakes_for_the_divine)
@@ -92,7 +141,10 @@ class RandumbTest < Test::Unit::TestCase
 
         should "work with uniq" do
           assert_equal 2, Artist.uniq.random(2).length
+          assert_equal 2, Artist.uniq.random_by_id_shuffle(2).length
+
           assert_not_nil Artist.uniq.random
+          assert_not_nil Artist.uniq.random_by_id_shuffle
         end
 
       end
@@ -107,13 +159,28 @@ class RandumbTest < Test::Unit::TestCase
       @minutemen = FactoryGirl.create(:artist, :name => "Minutemen", :views => 2)
     end
 
-    should "eventually render the 2 possible orders" do
+    should "eventually render the 2 possible orders using default method" do
       order1 = [@hum, @minutemen]
       order2 = [@minutemen, @hum]
       order1_found = false
       order2_found = false
       100.times do
         order = Artist.random(2)
+        order1_found = true if order == order1
+        order2_found = true if order == order2
+        break if order1_found && order2_found
+      end
+      assert order1_found
+      assert order2_found
+    end
+
+    should "eventually render the 2 possible orders using shuffle method" do
+      order1 = [@hum, @minutemen]
+      order2 = [@minutemen, @hum]
+      order1_found = false
+      order2_found = false
+      100.times do
+        order = Artist.random_by_id_shuffle(2)
         order1_found = true if order == order1
         order2_found = true if order == order2
         break if order1_found && order2_found

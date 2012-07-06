@@ -6,6 +6,15 @@ randumb is a ruby gem that allows you to easily pull random records via ActiveRe
 
 Requires ActiveRecord 3.0.0 or greater
 
+## Install 
+
+``` ruby
+# Add the following to you Gemfile
+gem 'randumb'
+# Update your bundle
+bundle install
+```
+
 ## Usage
 
 ``` ruby
@@ -24,7 +33,7 @@ Artist.has_views.includes(:albums).where(["created_at > ?", 2.days.ago]).random(
 # randumb will return an array with those 5 records in random order
 ```
 
-randumb works by tacking on an additional RANDOM() order to the scope.
+randumb works by tacking on an additional RANDOM() order to the scope by default.
 It will have the least amount of sort precedence if you are already including other ordering.
 
 ### Stacking the Deck
@@ -36,18 +45,35 @@ Movie model has a numeric ```score``` column, you can use ```Movie.random_weight
 
 Higher-scored movies will be more likely to be returned than lower-scored movies, in proportion to their ```score```.
 
-## Install 
+### Pick Your Poison
+
+If you wish to use randumb's prior algorithm of selecting all matching ids into memory and then using array's shuffle method to pick the ids, then running another query to fetch the full results, you may use the ```random_by_id_shuffle``` method.
+
+You cannot apply weighting when using this method.  It should also be noted that when specifying limits and orders, those will be applied to the initial query for ids and omitted from the final query.  Ex:
 
 ``` ruby
-# Add the following to you Gemfile
-gem 'randumb'
-# Update your bundle
-bundle install
+# I want 5 random artists that are in the top 100 most viewed
+artists = Artist.limit(100).order("view_count DESC").random_by_id_shuffle(5)
+# Executes:
+# select artist.id from artists ORDER BY view_count DESC LIMIT 100
+# ...randomly choose 5 ids from the result in ruby...
+# select * from artists WHERE id in (12, 2334, ...)
+```
+
+Compare this to the default random() method which will use the lesser of the limits you provide, and apply order by random() sorting after any other sorts you provide.
+
+``` ruby
+# I want the top 5 artists and I'm pointlessly providing a limit of 100
+# plus I want artists with the same view count to be sorted randomy.
+# This is clearly a silly thing to do.
+artists = Artist.limit(100).order("view_count DESC").random(5)
+# Executes:
+# select * from artists ORDER BY view_count DESC, RANDOM() LIMIT 100
 ```
 
 ## A Note on Performance
 
-As stated above, randumb uses the simple approach of applying an order by random() statement to your query.  In most sets, this performs well enough to not really be a big deal.  However, as many blog posts and articles will note, the database must generate a random number for each row matching the scope and can result in rather slow queries in large sets.  The last time I tested randumb on a test data set with 1 million rows (with no scopes) it took over 2 seconds.
+As stated above, by default, randumb uses the simple approach of applying an order by random() statement to your query.  In most sets, this performs well enough to not really be a big deal.  However, as many blog posts and articles will note, the database must generate a random number for each row matching the scope and can result in rather slow queries in large sets.  The last time I tested randumb on a test data set with 1 million rows (with no scopes) it took over 2 seconds.
 
 In earlier versions of randumb I tried to alleviate this by doing two db queries.  One to select the possibly IDs into an array, and a second with a randomly selected set of those ids.  This was sometimes faster in very high data sets, however, for almost all sizes I tested, it did not perform significatly better than order by rand() and had the possibility of running out of memory due to selecting all the ids into into a ruby array.
 
@@ -61,6 +87,8 @@ I built this for use on [Compare Vinyl][comparevinyl].  Check out the homepage t
 
 ## Changelog
 
-### 0.3.0
+### 0.3.0 (to be pushed to rubygems soon)
 
-* Added ```random_weighted``` (to be pushed to rubygems soon)
+* Added ```random_weighted``` 
+* Adding random_by_id_shuffle() 
+* Bugfix for #7

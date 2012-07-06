@@ -20,6 +20,18 @@ class WeightedTest < Test::Unit::TestCase
     end
   end
 
+  if ENV["DB"] == "postgres"
+    should "raise exception if being called with uniq/postgres" do
+      assert_raises(Exception) do
+        Artist.uniq.random_weighted(:name)
+      end
+    end
+  else
+    should "work with uniq if not postgres" do
+      assert_nil Artist.uniq.random_weighted_by_views
+    end
+  end
+
   should "not blow up with integer columns and float column types" do
     assert_nil Artist.random_weighted_by_views
     assert_nil Artist.random_weighted_by_rating
