@@ -33,7 +33,7 @@ If only 5 records matched the conditions specified above, randumb will return an
 
 ### How It Works
 
-randumb simply tacksan additional ```ORDER BY RANDOM()``` (or ```RAND()``` for mysql) to your query.
+randumb simply tacks an additional ```ORDER BY RANDOM()``` (or ```RAND()``` for mysql) to your query.
 
 It will have the *least* amount of sort precedence if you include other orders in your scope.
 
