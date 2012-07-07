@@ -104,5 +104,5 @@ I built this for use on [Compare Vinyl][comparevinyl].  Check out the homepage t
 
 ### 0.3.0
 
-* Added random_weighted() (thanks @mceachen)
+* Added random_weighted() (thanks mceachen)
 * Added random_by_id_shuffle() to fix issue with uniq in postgres and provide some options
