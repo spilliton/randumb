@@ -3,7 +3,11 @@ rvm:
   - 1.9.3
 
 env:
-  - DB=postgres
+  - DB=postgres ACTIVE_RECORD_VERSION=3.0.0
+  - DB=mysql ACTIVE_RECORD_VERSION=3.0.0
+  - DB=sqlite3 ACTIVE_RECORD_VERSION=3.0.0
+
+  - DB=postgres 
   - DB=mysql
   - DB=sqlite3
 

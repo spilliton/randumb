@@ -12,9 +12,12 @@ Gem::Specification.new do |s|
   s.files       = Dir['lib/**/*.rb']
   s.test_files  = Dir['test/**/*.rb']
 
-  s.add_dependency 'activesupport', '>= 3.0.0'
-  s.add_dependency 'activerecord', '>= 3.0.0'
   s.add_dependency 'rake'
+
+  # need to test different versions of active record
+  ar_env = ENV['ACTIVE_RECORD_VERSION'] || '>= 3.0.0'
+  s.add_dependency 'activesupport', ar_env
+  s.add_dependency 'activerecord', ar_env
 
   # for gem dev
   db_env = ENV['DB'] || 'sqlite3'
