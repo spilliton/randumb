@@ -20,7 +20,7 @@ module Randumb
 
         # postgres won't let you do an order_by when also doing a distinct
         # let's just use the in-memory option in this case
-        if relation.uniq_value && connection.adapter_name =~ /postgres/i
+        if relation.respond_to?(:uniq_value) && relation.uniq_value && connection.adapter_name =~ /postgres/i
           if ranking_column 
             raise Exception, "random_weighted: not possible when using .uniq and the postgres db adapter"
           else

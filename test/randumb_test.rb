@@ -139,12 +139,14 @@ class RandumbTest < Test::Unit::TestCase
           assert_equal true, albums.include?(@sixty_nine_love_songs)
         end
 
-        should "work with uniq" do
-          assert_equal 2, Artist.uniq.random(2).length
-          assert_equal 2, Artist.uniq.random_by_id_shuffle(2).length
-
-          assert_not_nil Artist.uniq.random
-          assert_not_nil Artist.uniq.random_by_id_shuffle
+        # ActiveRecord 3.0 does not have this
+        if Artist.respond_to?(:uniq)
+          should "work with uniq" do
+            assert_equal 2, Artist.uniq.random(2).length
+            assert_equal 2, Artist.uniq.random_by_id_shuffle(2).length
+            assert_not_nil Artist.uniq.random
+            assert_not_nil Artist.uniq.random_by_id_shuffle
+          end
         end
 
       end

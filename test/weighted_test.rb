@@ -20,15 +20,18 @@ class WeightedTest < Test::Unit::TestCase
     end
   end
 
-  if ENV["DB"] == "postgres"
-    should "raise exception if being called with uniq/postgres" do
-      assert_raises(Exception) do
-        Artist.uniq.random_weighted(:name)
+  # ActiveRecord 3.0 doesnt have uniq scope
+  if Artist.respond_to?(:uniq)
+    if ENV["DB"] == "postgres"
+      should "raise exception if being called with uniq/postgres" do
+        assert_raises(Exception) do
+          Artist.uniq.random_weighted(:name)
+        end
       end
-    end
-  else
-    should "work with uniq if not postgres" do
-      assert_nil Artist.uniq.random_weighted_by_views
+    else
+      should "work with uniq if not postgres" do
+        assert_nil Artist.uniq.random_weighted_by_views
+      end
     end
   end
 
