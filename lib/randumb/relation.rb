@@ -4,7 +4,7 @@ require 'active_record/relation'
 module Randumb
   # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/relation/query_methods.rb
   module ActiveRecord
-    
+
     module Relation
 
       # If the max_items argument is omitted, one random entity will be returned.
@@ -41,17 +41,17 @@ module Randumb
         max_items ||= 1
         relation = clone
         ids = fetch_random_ids(relation, max_items)
-  
+
         # build new scope for final query
         the_scope = klass.includes(includes_values)
 
         # specifying empty selects caused bug in rails 3.0.0/3.0.1
-        the_scope = the_scope.select(select_values) unless select_values.empty? 
+        the_scope = the_scope.select(select_values) unless select_values.empty?
 
         # get the records and shuffle since the order of the ids
         # passed to find_all_by_id isn't retained in the result set
         records = the_scope.find_all_by_id(ids).shuffle!
-                
+
         # return first record if method was called without parameters
         return_first_record ? records.first : records
       end
@@ -61,9 +61,9 @@ module Randumb
       # postgres won't let you do an order_by when also doing a distinct
       # let's just use the in-memory option in this case
       def is_randumb_postges_case?(relation, ranking_column)
-        if relation.respond_to?(:uniq_value) && relation.uniq_value && connection.adapter_name =~ /postgres/i
-          if ranking_column 
-            raise Exception, "random_weighted: not possible when using .uniq and the postgres db adapter"
+        if relation.respond_to?(:uniq_value) && relation.uniq_value && connection.adapter_name =~ /(postgres|postgis)/i
+          if ranking_column
+            raise Exception, "random_weighted: not possible when using .uniq and the postgres/postgis db adapter"
           else
             return true
           end
@@ -81,7 +81,7 @@ module Randumb
 
       # sligtly different for each DB
       def random_syntax
-        if connection.adapter_name =~ /(sqlite|postgres)/i
+        if connection.adapter_name =~ /(sqlite|postgres|postgis)/i
           "RANDOM()"
         elsif connection.adapter_name =~ /mysql/i
           "RAND()"
@@ -98,7 +98,7 @@ module Randumb
           if connection.adapter_name =~ /sqlite/i
             # computer multiplication is faster than division I was once taught...so translate here
             max_int = 9223372036854775807.0
-            multiplier = 1.0 / max_int 
+            multiplier = 1.0 / max_int
             "(#{ranking_column} * ABS(#{random_syntax} * #{multiplier}) ) DESC"
           else
             "(#{ranking_column} * #{random_syntax}) DESC"
@@ -112,11 +112,11 @@ module Randumb
         # clear these for our id only query
         relation.select_values = []
         relation.includes_values = []
-      
+
         # do original query but only for id field
         id_only_relation = relation.select("#{table_name}.id")
         id_results = connection.select_all(id_only_relation.to_sql)
-      
+
         if max_ids == 1 && id_results.length > 0
           ids = [ id_results[ rand(id_results.length) ]['id'] ]
         else
@@ -124,9 +124,9 @@ module Randumb
         end
       end
 
-    end 
+    end
 
-    
+
     # Class methods
     module Base
       def random(max_items = nil)
@@ -140,7 +140,7 @@ module Randumb
       def random_by_id_shuffle(max_items = nil)
         relation.random_by_id_shuffle(max_items)
       end
-    end 
+    end
 
 
     # These get registered as class and instance methods
