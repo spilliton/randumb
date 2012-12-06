@@ -5,7 +5,7 @@
 
 randumb is a ruby gem that allows you to easily pull random records from your database of choice
 
-Requires ActiveRecord >= 3.0.0 and supports SQLite, MySQL and Postgres
+Requires ActiveRecord >= 3.0.0 and supports SQLite, MySQL and Postgres/PostGIS
 
 ## Install 
 
