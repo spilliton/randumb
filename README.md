@@ -7,7 +7,7 @@ randumb is a ruby gem that allows you to easily pull random records from your da
 
 Requires ActiveRecord >= 3.0.0 and supports SQLite, MySQL and Postgres/PostGIS
 
-## Install 
+## Install
 
 ``` ruby
 # Add the following to you Gemfile
@@ -45,16 +45,16 @@ It will have the *least* amount of sort precedence if you include other orders i
 You can use the ```random_weighted``` method to favor certain records more than others.
 
 For example, if you want to favor higher-rated Movies, and your
-Movie model has a numeric ```score``` column, you can do any of the the following: 
+Movie model has a numeric ```score``` column, you can do any of the the following:
 
 ``` ruby
-Movie.random_weighted(:score)      
-Movie.random_weighted_by_score     
+Movie.random_weighted(:score)
+Movie.random_weighted_by_score
 # returns 1 random movie by:
 # select * from movies ORDER BY (score * RANDOM() DESC)
 
-Movie.random_weighted(:score, 10)  
-Movie.random_weighted_by_score(10) 
+Movie.random_weighted(:score, 10)
+Movie.random_weighted_by_score(10)
 # returns an array of up to 10 movies and executes:
 # select * from movies ORDER BY (score * RANDOM() DESC) LIMIT 10
 ```
@@ -100,10 +100,3 @@ If you are noticing slow speeds on your random queries and you have a very very 
 I built this for use on [Compare Vinyl][comparevinyl].  Check out the homepage to see it in action :)
 
 [comparevinyl]: http://www.comparevinyl.com/
-
-## Changelog
-
-### 0.3.0
-
-* Added random_weighted() (thanks mceachen)
-* Added random_by_id_shuffle() to fix issue with uniq in postgres and provide some options

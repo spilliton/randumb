@@ -1,0 +1,8 @@
+### 0.3.1
+
+* Added support for PostGIS
+
+### 0.3.0
+
+* Added random_weighted() (thanks mceachen)
+* Added random_by_id_shuffle() to fix issue with uniq in postgres and provide some options
