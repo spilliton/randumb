@@ -1,7 +1,8 @@
 # randumb
 
+[![Gem Version](https://badge.fury.io/rb/randumb.png)](http://badge.fury.io/rb/randumb)
 [![Build Status](https://secure.travis-ci.org/spilliton/randumb.png?branch=master)](http://travis-ci.org/spilliton/randumb)
-[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/spilliton/randumb)
+[![Code Climate](https://codeclimate.com/github/spilliton/randumb.png)](https://codeclimate.com/github/spilliton/randumb)
 
 randumb is a ruby gem that allows you to easily pull random records from your database of choice
 
@@ -12,6 +13,7 @@ Requires ActiveRecord >= 3.0.0 and supports SQLite, MySQL and Postgres/PostGIS
 ``` ruby
 # Add the following to you Gemfile
 gem 'randumb'
+
 # Update your bundle
 bundle install
 ```
