@@ -15,19 +15,19 @@ Gem::Specification.new do |s|
   s.add_dependency 'rake'
 
   # need to test different versions of active record
-  ar_env = ENV['ACTIVE_RECORD_VERSION'] || '>= 3.0.0'
+  ar_env = ENV['ACTIVE_RECORD_VERSION'] || '>= 3.2.13'
   s.add_dependency 'activesupport', ar_env
   s.add_dependency 'activerecord', ar_env
 
   # for gem dev
   db_env = ENV['DB'] || 'sqlite3'
-  case db_env 
+  case db_env
   when 'sqlite3'
-    s.add_development_dependency 'sqlite3', '1.3.5' 
+    s.add_development_dependency 'sqlite3', '1.3.5'
   when 'mysql'
     if ar_env =~ /^3\.0/
       s.add_development_dependency 'mysql2', '< 0.3'
-    else  
+    else
       s.add_development_dependency 'mysql2', '~> 0.3.11'
     end
   when 'postgres'
