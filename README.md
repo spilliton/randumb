@@ -30,9 +30,9 @@ Artist.random(1)  # an array containing one random Artist
 ``` ruby
 # randumb works like the active record "all, first, and last" methods
 Artist.has_views.includes(:albums).where(["created_at > ?", 2.days.ago]).random(10)
+```
 
 If only 5 records matched the conditions specified above, randumb will return an array with those 5 records in random order (as opposed to 10 records with duplicates).
-```
 
 ### How It Works
 
