@@ -4,6 +4,7 @@ require "randumb/version"
 
 Gem::Specification.new do |s|
   s.name        = "randumb"
+  s.license     = 'MIT'
   s.version     = Randumb::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Zachary Kloepping"]
