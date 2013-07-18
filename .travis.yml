@@ -1,16 +1,17 @@
 language: ruby
 rvm:
   - 1.9.3
-
+# https://github.com/norman/friendly_id/blob/master/.travis.yml
 env:
-  - DB=postgres ACTIVE_RECORD_VERSION=4.0.0
-  - DB=mysql ACTIVE_RECORD_VERSION=4.0.0
-  - DB=sqlite3 ACTIVE_RECORD_VERSION=4.0.0
+# lowest supported active record
   - DB=postgres ACTIVE_RECORD_VERSION=3.0.0
   - DB=mysql ACTIVE_RECORD_VERSION=3.0.0
   - DB=sqlite3 ACTIVE_RECORD_VERSION=3.0.0
+# most recent active record 3
+  - DB=postgres ACTIVE_RECORD_VERSION=3.2.13
+  - DB=mysql ACTIVE_RECORD_VERSION=3.2.13
+  - DB=sqlite3 ACTIVE_RECORD_VERSION=3.2.13
+# active record 4 and whatever is latest
   - DB=postgres 
   - DB=mysql
   - DB=sqlite3
-
-  # https://github.com/norman/friendly_id/blob/master/.travis.yml
