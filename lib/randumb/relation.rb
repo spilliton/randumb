@@ -22,7 +22,7 @@ module Randumb
         # get clause for current db type
         order_clause = random_order_clause(ranking_column)
 
-        the_scope = if relation.orders.is_a? Arel::Value
+        the_scope = if ::ActiveRecord::VERSION::MAJOR == 3 && ::ActiveRecord::VERSION::MINOR < 2
           # AR 3.0.0 support
           relation.order(order_clause)
         else
