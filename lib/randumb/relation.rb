@@ -29,7 +29,7 @@ module Randumb
         end
 
         # return first record if method was called without parameters
-        max_items ? the_scope.all : the_scope.first
+        max_items ? the_scope.to_a : the_scope.first
       end
 
 
@@ -115,12 +115,15 @@ module Randumb
 
         # do original query but only for id field
         id_only_relation = relation.select("#{table_name}.id")
+
         id_results = connection.select_all(id_only_relation.to_sql)
 
-        if max_ids == 1 && id_results.length > 0
-          ids = [ id_results[ rand(id_results.length) ]['id'] ]
+        if max_ids == 1 && id_results.count > 0
+          [ id_results[ rand(id_results.count) ]['id'] ]
         else
-          ids = id_results.shuffle![0,max_ids].collect!{ |h| h['id'] }
+          # ActiveRecord 4 requires .to_ary
+          arr = id_results.respond_to?(:to_ary) ? id_results.to_ary : id_results
+          arr.shuffle![0,max_ids].collect!{ |h| h['id'] }
         end
       end
 
