@@ -21,11 +21,17 @@ module Randumb
         raise_unless_valid_ranking_column(ranking_column)
         # get clause for current db type
         order_clause = random_order_clause(ranking_column)
-        # keep prior orders and append random
-        all_orders = (relation.orders + [order_clause]).join(", ")
-        # override all previous orders
-        the_scope = relation.reorder(all_orders) 
 
+        the_scope = if relation.orders.is_a? Arel::Value
+          # AR 3.0.0 support
+          relation.order(order_clause)
+        else
+          # keep prior orders and append random
+          all_orders = (relation.orders + [order_clause]).join(", ")
+          # override all previous orders
+          relation.reorder(all_orders) 
+        end
+        
         # override the limit if they are requesting multiple records
         if max_items && (!relation.limit_value || relation.limit_value > max_items)
           the_scope = the_scope.limit(max_items)
