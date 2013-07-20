@@ -19,9 +19,12 @@ module Randumb
         relation = clone
         return random_by_id_shuffle(max_items) if is_randumb_postges_case?(relation, ranking_column)
         raise_unless_valid_ranking_column(ranking_column)
-
+        # get clause for current db type
         order_clause = random_order_clause(ranking_column)
-        the_scope = relation.order(order_clause)
+        # keep prior orders and append random
+        all_orders = (relation.orders + [order_clause]).join(", ")
+        # override all previous orders
+        the_scope = relation.reorder(all_orders) 
 
         # override the limit if they are requesting multiple records
         if max_items && (!relation.limit_value || relation.limit_value > max_items)
