@@ -1,3 +1,7 @@
+### 0.4.0
+
+* Support for Active Record 4
+
 ### 0.3.1
 
 * Added support for PostGIS
