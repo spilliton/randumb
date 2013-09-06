@@ -97,6 +97,17 @@ In earlier versions of randumb I tried to alleviate this by doing two db queries
 
 If you are noticing slow speeds on your random queries and you have a very very large database table, my advice is to scope down your query to a subset of the table via an indexed scope.  Ex:  ```Artist.where('views > 10').random```  This will result in less calls to RAND() and a faster query.  You might also experiment with the old method by using ```random_by_id_shuffle``` and gauge the resulting speeds.
 
+## ActiveRecord Caching
+
+By default, ActiveRecord keeps a cache of the queries executed during the current request. If you call `random` multiple times on the same model or scope, you will end up with the same SQL query again, which causes the cache to return the result of the last query. You will see the following in your log if this happens:
+
+```
+Artist Load (0.3ms)  SELECT "artists".* FROM "artists" ORDER BY RANDOM() LIMIT 1
+CACHE (0.0ms)  SELECT "artists".* FROM "artists" ORDER BY RANDOM() LIMIT 1
+```
+
+Fortunately, there is an easy workaround: Just wrap your query in a call to ```uncached```, e.g. ```Artist.uncached { Artist.random }```.
+
 ## Why
 
 I built this for use on [Compare Vinyl][comparevinyl].  Check out the homepage to see it in action :)
