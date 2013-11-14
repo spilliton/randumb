@@ -107,20 +107,20 @@ class WeightedTest < Test::Unit::TestCase
         result.first.views
       end
     end
+  end
 
-    def assert_hits_per_views
-      hits_per_views = Hash.new
-      @view_counts.each { |views| hits_per_views[views] = 0 }
-      
-      1000.times do
-        hits_per_views[yield] += 1
-      end
-      last_count = 0
-      @view_counts.each do |views|
-        hits = hits_per_views[views]
-        assert(hits >= last_count, "#{hits} > #{last_count} : There were an unexpected number of visits: #{hits_per_views.to_yaml}")
-        last_count = hits
-      end
+  def assert_hits_per_views
+    hits_per_views = Hash.new
+    @view_counts.each { |views| hits_per_views[views] = 0 }
+    
+    1000.times do
+      hits_per_views[yield] += 1
+    end
+    last_count = 0
+    @view_counts.each do |views|
+      hits = hits_per_views[views]
+      assert(hits >= last_count, "#{hits} > #{last_count} : There were an unexpected number of visits: #{hits_per_views.to_yaml}")
+      last_count = hits
     end
   end
 
