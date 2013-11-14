@@ -2,11 +2,10 @@ $:.unshift '.'; require File.dirname(__FILE__) + '/test_helper'
 
 class RandumbTest < Test::Unit::TestCase
 
-  def assert_equal_for_both_methods(expected, obj, params = nil)
-    assert_equal expected, obj.send(:random, params), "when calling random"
-    assert_equal expected, obj.send(:random_by_id_shuffle, params), "when calling random_by_id_shuffle"
+  def assert_equal_for_both_methods(expected, obj, *params)
+    assert_equal expected, obj.send(:random, *params), "when calling random"
+    assert_equal expected, obj.send(:random_by_id_shuffle, *params), "when calling random_by_id_shuffle"
   end
-
 
   should "should return empty when no record in table" do
     assert_equal 0, Artist.count
@@ -190,6 +189,25 @@ class RandumbTest < Test::Unit::TestCase
       assert order1_found
       assert order2_found
     end
-  end
 
+    context "using seed" do
+      setup do
+        @seed = 123
+      end
+
+      should "always return the same order using default method" do
+        seeded_order = Artist.random(2, @seed)
+        10.times do
+          assert_equal seeded_order, Artist.random(2, @seed)
+        end
+      end
+
+      should "always return the same order using shuffle method" do
+        seeded_order = Artist.random_by_id_shuffle(2, @seed)
+        10.times do
+          assert_equal seeded_order, Artist.random_by_id_shuffle(2, @seed)
+        end
+      end
+    end
+  end
 end
