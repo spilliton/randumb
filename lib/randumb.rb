@@ -1,4 +1,5 @@
 require 'randumb/version'
+require 'randumb/syntax'
 require 'randumb/relation'
 
 # Mix it in
