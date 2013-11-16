@@ -61,6 +61,17 @@ Movie.random_weighted_by_score(10)
 # select * from movies ORDER BY (score * RANDOM() DESC) LIMIT 10
 ```
 
+### Planting A Seed
+
+If you wish to seed the randomness so that you can have predictable outcomes, you can provide an optional integer seed to any of randumbs method calls:
+
+``` ruby
+# Assuming no no records have been added between calls
+# These will return the same 2 artists in the same order both times
+Artist.random(2, seed: 123) 
+Artist.random(2, seed: 123) 
+```
+
 ### Pick Your Poison
 
 The adventurous may wish to try randumb's earlier algorithm for random record selection: ```random_by_id_shuffle```.
