@@ -6,15 +6,9 @@ require 'factory_girl'
 require 'faker'
 require 'active_record'
 require 'active_support/dependencies'
-require 'active_support/core_ext/logger'
-# require 'active_record/fixtures'
 require 'randumb'
 
 MODELS_PATH = File.join(File.dirname(__FILE__), 'models')
-
-
-ActiveRecord::Base.logger = Logger.new(STDERR)
-ActiveRecord::Base.logger.level = Logger::WARN
 
 config = YAML::load(File.open(File.expand_path("../databases.yml", __FILE__)))
 version = ActiveRecord::VERSION::STRING
