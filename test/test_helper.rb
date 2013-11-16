@@ -6,6 +6,7 @@ require 'factory_girl'
 require 'faker'
 require 'active_record'
 require 'active_support/dependencies'
+require 'active_support/core_ext/logger'
 # require 'active_record/fixtures'
 require 'randumb'
 
