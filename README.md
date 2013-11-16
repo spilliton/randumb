@@ -63,7 +63,7 @@ Movie.random_weighted_by_score(10)
 
 ### Planting A Seed
 
-If you wish to seed the randomness so that you can have predictable outcomes, you can provide an optional integer seed to any of randumbs method calls:
+If you wish to seed the randomness so that you can have predictable outcomes, provide an optional integer seed to any of randumb's method calls:
 
 ``` ruby
 # Assuming no no records have been added between calls
