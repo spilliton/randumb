@@ -196,16 +196,16 @@ class RandumbTest < Test::Unit::TestCase
       end
 
       should "always return the same order using default method" do
-        seeded_order = Artist.random(2, @seed)
+        seeded_order = Artist.random(2, seed: @seed)
         10.times do
-          assert_equal seeded_order, Artist.random(2, @seed)
+          assert_equal seeded_order, Artist.random(2, seed: @seed)
         end
       end
 
       should "always return the same order using shuffle method" do
-        seeded_order = Artist.random_by_id_shuffle(2, @seed)
+        seeded_order = Artist.random_by_id_shuffle(2, seed: @seed)
         10.times do
-          assert_equal seeded_order, Artist.random_by_id_shuffle(2, @seed)
+          assert_equal seeded_order, Artist.random_by_id_shuffle(2, seed: @seed)
         end
       end
     end

@@ -9,18 +9,18 @@ module Randumb
 
       # If the max_items argument is omitted, one random entity will be returned.
       # If you provide the integer argument, you will get back an array of records.
-      def random(max_items = nil, seed = nil)
-        random_weighted(nil, max_items, seed)
+      def random(max_items = nil, opts={})
+        random_weighted(nil, max_items, opts)
       end
 
       # If ranking_column is provided, that named column wil be multiplied
       # by a random number to determine probability of order. The ranking column must be numeric.
-      def random_weighted(ranking_column, max_items = nil, seed = nil)
+      def random_weighted(ranking_column, max_items = nil, opts={})
         relation = clone
-        return random_by_id_shuffle(max_items, seed) if is_randumb_postges_case?(relation, ranking_column)
+        return random_by_id_shuffle(max_items, opts) if is_randumb_postges_case?(relation, ranking_column)
         raise_unless_valid_ranking_column(ranking_column)
         # get clause for current db type
-        order_clause = random_order_clause(ranking_column, seed)
+        order_clause = random_order_clause(ranking_column, opts)
 
         the_scope = if ::ActiveRecord::VERSION::MAJOR == 3 && ::ActiveRecord::VERSION::MINOR < 2
           # AR 3.0.0 support
@@ -45,11 +45,11 @@ module Randumb
       # This was my first implementation, adding it as an option for people to use
       # and to fall back on for pesky DB one off situations...
       #    https://github.com/spilliton/randumb/issues/7
-      def random_by_id_shuffle(max_items = nil, seed = nil)
+      def random_by_id_shuffle(max_items = nil, opts={})
         return_first_record = max_items.nil? # see return switch at end
         max_items ||= 1
         relation = clone
-        ids = fetch_random_ids(relation, max_items, seed)
+        ids = fetch_random_ids(relation, max_items, opts)
 
         # build new scope for final query
         the_scope = klass.includes(includes_values)
@@ -59,6 +59,7 @@ module Randumb
 
         # get the records and shuffle since the order of the ids
         # passed to where() isn't retained in the result set
+        seed = opts[:seed]
         rng = seed ? Random.new(seed) : Random.new
         records = the_scope.where(:id => ids).shuffle!(:random => rng)
 
@@ -90,7 +91,8 @@ module Randumb
       end
 
       # sligtly different for each DB
-      def random_syntax(seed)
+      def random_syntax(opts={})
+        seed = opts[:seed]
         if connection.adapter_name =~ /(sqlite)/i
           if seed
             # SQLLite does not support a random seed.  However, pseudo-randomness
@@ -124,24 +126,24 @@ module Randumb
       end
 
       # builds the order clause to be appended in where clause
-      def random_order_clause(ranking_column, seed)
+      def random_order_clause(ranking_column, opts={})
         if ranking_column.nil?
-          random_syntax(seed)
+          random_syntax(opts)
         else
           if connection.adapter_name =~ /sqlite/i
             # computer multiplication is faster than division I was once taught...so translate here
             max_int = 9223372036854775807.0
             multiplier = 1.0 / max_int
-            "(#{ranking_column} * ABS(#{random_syntax(seed)} * #{multiplier}) ) DESC"
+            "(#{ranking_column} * ABS(#{random_syntax(opts)} * #{multiplier}) ) DESC"
           else
-            "(#{ranking_column} * #{random_syntax(seed)}) DESC"
+            "(#{ranking_column} * #{random_syntax(opts)}) DESC"
           end
         end
       end
 
       # Returns all matching ids from the db, shuffles them,
       # then returns an array containing at most max_ids
-      def fetch_random_ids(relation, max_ids, seed)
+      def fetch_random_ids(relation, max_ids, opts={})
         # clear these for our id only query
         relation.select_values = []
         relation.includes_values = []
@@ -151,6 +153,7 @@ module Randumb
 
         id_results = connection.select_all(id_only_relation.to_sql)
 
+        seed = opts[:seed]
         rng = seed ? Random.new(seed) : Random.new
         if max_ids == 1 && id_results.count > 0
           [ id_results[ rng.rand(id_results.count) ]['id'] ]
@@ -166,16 +169,16 @@ module Randumb
 
     # Class methods
     module Base
-      def random(max_items = nil, seed = nil)
-        relation.random(max_items, seed)
+      def random(max_items = nil, opts = {})
+        relation.random(max_items, opts)
       end
 
-      def random_weighted(ranking_column, max_items = nil, seed = nil)
-        relation.random_weighted(ranking_column, max_items, seed)
+      def random_weighted(ranking_column, max_items = nil, opts = {})
+        relation.random_weighted(ranking_column, max_items, opts)
       end
 
-      def random_by_id_shuffle(max_items = nil, seed = nil)
-        relation.random_by_id_shuffle(max_items, seed)
+      def random_by_id_shuffle(max_items = nil, opts = {})
+        relation.random_by_id_shuffle(max_items, opts)
       end
     end
 
