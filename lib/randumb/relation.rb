@@ -10,7 +10,15 @@ module Randumb
       # If the max_items argument is omitted, one random entity will be returned.
       # If you provide the integer argument, you will get back an array of records.
       def random(max_items = nil, opts={})
-        random_weighted(nil, max_items, opts)
+        relation = clone
+        scope = relation.order_by_rand(opts)
+
+        if max_items && (!relation.limit_value || relation.limit_value > max_items)
+          scope = scope.limit(max_items)
+        end
+
+        # return first record if method was called without parameters
+        max_items ? scope.to_a : scope.first
       end
 
       # If ranking_column is provided, that named column wil be multiplied
@@ -20,26 +28,15 @@ module Randumb
         return random_by_id_shuffle(max_items, opts) if is_randumb_postges_case?(relation, ranking_column)
         raise_unless_valid_ranking_column(ranking_column)
 
-        # get clause for current db type
-        order_clause = Randumb::Syntax.random_order_clause(ranking_column, opts.merge(connection: connection, table_name: table_name))
+        scope = relation.order_by_rand_weighted(ranking_column, opts)
 
-        the_scope = if ::ActiveRecord::VERSION::MAJOR == 3 && ::ActiveRecord::VERSION::MINOR < 2
-          # AR 3.0.0 support
-          relation.order(order_clause)
-        else
-          # keep prior orders and append random
-          all_orders = (relation.orders + [order_clause]).join(", ")
-          # override all previous orders
-          relation.reorder(all_orders) 
-        end
-        
         # override the limit if they are requesting multiple records
         if max_items && (!relation.limit_value || relation.limit_value > max_items)
-          the_scope = the_scope.limit(max_items)
+          scope = scope.limit(max_items)
         end
 
         # return first record if method was called without parameters
-        max_items ? the_scope.to_a : the_scope.first
+        max_items ? scope.to_a : scope.first
       end
 
 
@@ -67,7 +64,33 @@ module Randumb
         return_first_record ? records.first : records
       end
 
+      def order_by_rand(opts = {})
+        opts.reverse_merge!(connection: connection, table_name: table_name)
+
+        order_clause = Randumb::Syntax.random_order_clause(opts)
+        build_order_scope(order_clause)
+      end
+
+      def order_by_rand_weighted(ranking_column, opts = {})
+        opts.reverse_merge!(connection: connection, table_name: table_name)
+
+        order_clause = Randumb::Syntax.random_weighted_order_clause(ranking_column, opts)
+        build_order_scope(order_clause)
+      end
+
       private
+
+      def build_order_scope(order_clause)
+        if ::ActiveRecord::VERSION::MAJOR == 3 && ::ActiveRecord::VERSION::MINOR < 2
+          # AR 3.0.0 support
+          order(order_clause)
+        else
+          # keep prior orders and append random
+          all_orders = (orders + [order_clause]).join(", ")
+          # override all previous orders
+          reorder(all_orders)
+        end
+      end
 
       # postgres won't let you do an order_by when also doing a distinct
       # let's just use the in-memory option in this case
@@ -102,7 +125,7 @@ module Randumb
 
         id_results = connection.select_all(id_only_relation.to_sql)
 
-        
+
         rng = random_number_generator(opts)
         if max_ids == 1 && id_results.count > 0
           rand_index = rng.rand(id_results.count)
