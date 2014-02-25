@@ -14,9 +14,7 @@ module Randumb
         return random_by_id_shuffle(max_items, opts) if is_randumb_postges_case?(relation)
         scope = relation.order_by_rand(opts)
 
-        if max_items && (!relation.limit_value || relation.limit_value > max_items)
-          scope = scope.limit(max_items)
-        end
+        scope = scope.limit(max_items) if override_limit?(max_items, relation)
 
         # return first record if method was called without parameters
         max_items ? scope.to_a : scope.first
@@ -32,9 +30,7 @@ module Randumb
         scope = relation.order_by_rand_weighted(ranking_column, opts)
 
         # override the limit if they are requesting multiple records
-        if max_items && (!relation.limit_value || relation.limit_value > max_items)
-          scope = scope.limit(max_items)
-        end
+        scope = scope.limit(max_items) if override_limit?(max_items, relation)
 
         # return first record if method was called without parameters
         max_items ? scope.to_a : scope.first
@@ -65,23 +61,25 @@ module Randumb
         return_first_record ? records.first : records
       end
 
-      def order_by_rand(opts = {})
-        opts.reverse_merge!(connection: connection, table_name: table_name)
-
-        order_clause = Randumb::Syntax.random_order_clause(opts)
-        build_order_scope(order_clause)
+      def order_by_rand(opts={})
+        build_order_scope(opts)
       end
 
-      def order_by_rand_weighted(ranking_column, opts = {})
-        opts.reverse_merge!(connection: connection, table_name: table_name)
-
-        order_clause = Randumb::Syntax.random_weighted_order_clause(ranking_column, opts)
-        build_order_scope(order_clause)
+      def order_by_rand_weighted(ranking_column, opts={})
+        build_order_scope(opts, ranking_column)
       end
 
       private
 
-      def build_order_scope(order_clause)
+      def build_order_scope(options, ranking_column=nil)
+        opts = options.reverse_merge(connection: connection, table_name: table_name)
+
+        order_clause = if ranking_column
+          Randumb::Syntax.random_weighted_order_clause(ranking_column, opts)
+        else
+          Randumb::Syntax.random_order_clause(opts)
+        end
+
         if ::ActiveRecord::VERSION::MAJOR == 3 && ::ActiveRecord::VERSION::MINOR < 2
           # AR 3.0.0 support
           order(order_clause)
@@ -126,7 +124,6 @@ module Randumb
 
         id_results = connection.select_all(id_only_relation.to_sql)
 
-
         rng = random_number_generator(opts)
         if max_ids == 1 && id_results.count > 0
           rand_index = rng.rand(id_results.count)
@@ -144,6 +141,10 @@ module Randumb
         else
           Random.new
         end
+      end
+
+      def override_limit?(max_items, relation)
+        max_items && (!relation.limit_value || relation.limit_value > max_items)
       end
 
     end
