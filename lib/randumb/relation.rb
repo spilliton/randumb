@@ -11,6 +11,7 @@ module Randumb
       # If you provide the integer argument, you will get back an array of records.
       def random(max_items = nil, opts={})
         relation = clone
+        return random_by_id_shuffle(max_items, opts) if is_randumb_postges_case?(relation)
         scope = relation.order_by_rand(opts)
 
         if max_items && (!relation.limit_value || relation.limit_value > max_items)
@@ -94,7 +95,7 @@ module Randumb
 
       # postgres won't let you do an order_by when also doing a distinct
       # let's just use the in-memory option in this case
-      def is_randumb_postges_case?(relation, ranking_column)
+      def is_randumb_postges_case?(relation, ranking_column=nil)
         if relation.respond_to?(:uniq_value) && relation.uniq_value && connection.adapter_name =~ /(postgres|postgis)/i
           if ranking_column
             raise Exception, "random_weighted: not possible when using .uniq and the postgres/postgis db adapter"
