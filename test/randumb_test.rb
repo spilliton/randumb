@@ -14,11 +14,13 @@ class RandumbTest < Test::Unit::TestCase
     # above is equivalent to:
     # assert_equal nil, Artist.random
     # assert_equal nil, Artist.random_by_id_shuffle
+    assert_nil Artist.order_by_rand.first
 
     assert_equal_for_both_methods [], Artist, 1
     # above is equivalent to:
     # assert_equal [], Artist.random(1)
     # assert_equal [], Artist.random_by_id_shuffle(1)
+    assert_equal [], Artist.order_by_rand.limit(1).all
 
     assert_equal_for_both_methods nil, Artist.limit(50)
   end
@@ -32,8 +34,11 @@ class RandumbTest < Test::Unit::TestCase
       assert_equal 1, Artist.count
 
       assert_equal_for_both_methods @high_on_fire, Artist
+      assert_equal @high_on_fire, Artist.order_by_rand.first
+
       assert_equal_for_both_methods [@high_on_fire], Artist, 1
       assert_equal_for_both_methods [@high_on_fire], Artist, 30
+      assert_equal [@high_on_fire], Artist.limit(30).order_by_rand.all
     end
 
     should "not return a record that doesnt match where" do
@@ -66,6 +71,10 @@ class RandumbTest < Test::Unit::TestCase
         assert_equal false, artists.first.name.nil?
         assert_raise (ActiveModel::MissingAttributeError) {artists.first.views}
 
+        artists = Artist.select(:name).order_by_rand.limit(3)
+        assert_equal false, artists.first.name.nil?
+        assert_raise (ActiveModel::MissingAttributeError) {artists.first.views}
+
         artists = Artist.select(:name).random_by_id_shuffle(3)
         assert_equal false, artists.first.name.nil?
         assert_raise (ActiveModel::MissingAttributeError) {artists.first.views}
@@ -73,6 +82,7 @@ class RandumbTest < Test::Unit::TestCase
 
       should "respect scopes" do
         assert_equal_for_both_methods [@fiona_apple], Artist.at_least_three_views, 3
+        assert_equal [@fiona_apple], Artist.at_least_three_views.order_by_rand.limit(3)
       end
 
       should "select only as many as in the db if we request more" do

@@ -163,6 +163,14 @@ module Randumb
       def random_by_id_shuffle(max_items = nil, opts = {})
         relation.random_by_id_shuffle(max_items, opts)
       end
+
+      def order_by_rand(opts={})
+        relation.order_by_rand(opts)
+      end
+
+      def order_by_rand_weighted(ranking_column, opts={})
+        relation.order_by_rand_weighted(ranking_column, opts)
+      end
     end
 
 
