@@ -69,6 +69,7 @@ module Randumb
 
       def order_by_rand_weighted(ranking_column, opts={})
         raise_unless_valid_ranking_column(ranking_column)
+        is_randumb_postges_case?(self, ranking_column)
         build_order_scope(opts, ranking_column)
       end
 
@@ -99,7 +100,7 @@ module Randumb
       def is_randumb_postges_case?(relation, ranking_column=nil)
         if relation.respond_to?(:uniq_value) && relation.uniq_value && connection.adapter_name =~ /(postgres|postgis)/i
           if ranking_column
-            raise Exception, "random_weighted: not possible when using .uniq and the postgres/postgis db adapter"
+            raise Exception, "order_by_rand_weighted: not possible when using .uniq and the postgres/postgis db adapter"
           else
             return true
           end
