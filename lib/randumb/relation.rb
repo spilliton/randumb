@@ -10,6 +10,7 @@ module Randumb
       # If the max_items argument is omitted, one random entity will be returned.
       # If you provide the integer argument, you will get back an array of records.
       def random(max_items = nil, opts={})
+        ActiveSupport::Deprecation.warn "The random() method will be depricated in randumb 1.0 in favor of the order_by_rand scope."
         relation = clone
         return random_by_id_shuffle(max_items, opts) if is_randumb_postges_case?(relation)
         scope = relation.order_by_rand(opts)
@@ -23,6 +24,7 @@ module Randumb
       # If ranking_column is provided, that named column wil be multiplied
       # by a random number to determine probability of order. The ranking column must be numeric.
       def random_weighted(ranking_column, max_items = nil, opts={})
+        ActiveSupport::Deprecation.warn "The random_weighted() method will be depricated in randumb 1.0 in favor of the order_by_rand_weighted scope."
         relation = clone
         return random_by_id_shuffle(max_items, opts) if is_randumb_postges_case?(relation, ranking_column)
         raise_unless_valid_ranking_column(ranking_column)
@@ -66,6 +68,7 @@ module Randumb
       end
 
       def order_by_rand_weighted(ranking_column, opts={})
+        raise_unless_valid_ranking_column(ranking_column)
         build_order_scope(opts, ranking_column)
       end
 
@@ -178,6 +181,7 @@ module Randumb
     module MethodMissingMagicks
       def method_missing(symbol, *args)
         if symbol.to_s =~ /^random_weighted_by_(\w+)$/
+          ActiveSupport::Deprecation.warn "Dynamic finders will be removed in randumb 1.0 http://guides.rubyonrails.org/active_record_querying.html#dynamic-finders"
           random_weighted($1, *args)
         else
           super
@@ -186,6 +190,7 @@ module Randumb
 
       def respond_to?(symbol, include_private=false)
         if symbol.to_s =~ /^random_weighted_by_(\w+)$/
+          ActiveSupport::Deprecation.warn "Dynamic finders will be removed in randumb 1.0 http://guides.rubyonrails.org/active_record_querying.html#dynamic-finders"
           true
         else
           super

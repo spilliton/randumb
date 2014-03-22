@@ -20,43 +20,33 @@ bundle install
 
 ## Usage
 
-``` ruby
-Artist.random # a random Artist if there are any, otherwise nil
-Artist.random(3)  # an array of three Artists picked at random
-Artist.random(1)  # an array containing one random Artist
-```
+The most common usage is a simple scope you can chain along like any other:
 
-### Scopes
 ``` ruby
-# randumb works like the active record "all, first, and last" methods
-Artist.has_views.includes(:albums).where(["created_at > ?", 2.days.ago]).random(10)
+Artist.order_by_rand.first # a random Artist if there are any, otherwise nil
+Artist.order_by_rand.limit(3).all  # an array of three Artists picked at random
+Artist.order_by_rand.limit(1).all  # an array containing one random Artist
 ```
-
-If only 5 records matched the conditions specified above, randumb will return an array with those 5 records in random order (as opposed to 10 records with duplicates).
 
 ### How It Works
 
 randumb simply tacks an additional ```ORDER BY RANDOM()``` (or ```RAND()``` for mysql) to your query.
 
-It will have the *least* amount of sort precedence if you include other orders in your scope.
-
 ## Advanced Usage
 
 ### Stacking the Deck
 
-You can use the ```random_weighted``` method to favor certain records more than others.
+You can use the ```order_by_rand_weighted``` method to favor certain records more than others.
 
 For example, if you want to favor higher-rated Movies, and your
 Movie model has a numeric ```score``` column, you can do any of the the following:
 
 ``` ruby
-Movie.random_weighted(:score)
-Movie.random_weighted_by_score
+Movie.order_by_rand_weighted(:score).first
 # returns 1 random movie by:
-# select * from movies ORDER BY (score * RANDOM() DESC)
+# select * from movies ORDER BY (score * RANDOM() DESC) LIMIT 1
 
-Movie.random_weighted(:score, 10)
-Movie.random_weighted_by_score(10)
+Movie.order_by_rand_weighted(:score).limit(10).all
 # returns an array of up to 10 movies and executes:
 # select * from movies ORDER BY (score * RANDOM() DESC) LIMIT 10
 ```
@@ -68,11 +58,24 @@ If you wish to seed the randomness so that you can have predictable outcomes, pr
 ``` ruby
 # Assuming no no records have been added between calls
 # These will return the same 2 artists in the same order both times
-Artist.random(2, seed: 123) 
-Artist.random(2, seed: 123) 
+Artist.order_by_rand(seed: 123).limit(2)
+Artist.order_by_rand(seed: 123).limit(2)
 ```
 
-### Pick Your Poison
+One use case is when you are paginating through random records.
+
+### Depricated Syntax
+
+A few methods will be going away in randumb 1.0 due to them not really following current active record conventions:
+
+``` ruby
+# working like the active record "all, first, and last" methods and passing limit as param
+Artist.has_views.includes(:albums).where(["created_at > ?", 2.days.ago]).random(10)
+# dynamic finders for weighted methods
+Artist.random_weighted_by_views
+```
+
+### Random By Id Shuffle
 
 The adventurous may wish to try randumb's earlier algorithm for random record selection: ```random_by_id_shuffle```.
 
@@ -88,36 +91,24 @@ artists = Artist.limit(100).order("view_count DESC").random_by_id_shuffle(5)
 # select * from artists WHERE id in (artist_ids)
 ```
 
-Compare this to the default ```random()``` which will use the lesser of the limits you provide and apply ```ORDER BY RANDOM()``` sorting after any other orders you provide.
-
-``` ruby
-# (belligerently) Gimme the top 5 artists and I'll pointlessly provide a limit of 100!
-# Plus I want artists with the same view count to be sorted randomly!
-# This clearly a silly thing to do...
-artists = Artist.limit(100).order("view_count DESC").random(5)
-
-# Executes:
-# select * from artists ORDER BY view_count DESC, RANDOM() LIMIT 5
-```
-
 ## A Note on Performance
 
 As stated above, by default, randumb uses a simple approach of applying an order by random() statement to your query.  In many sets, this performs well enough to not really be a big deal.  However, as many blog posts and articles will note, the database must generate a random number for each row matching the scope and this can result in rather slow queries for large result sets.  The last time I tested randumb on a test data set with 1 million rows (with no scopes) it took over 2 seconds.
 
 In earlier versions of randumb I tried to alleviate this by doing two db queries.  One to select the possibly IDs into an array, and a second with a randomly selected set of those ids.  This was sometimes faster in very high data sets, however, for most sizes I tested, it did not perform significatly better than ORDER BY RAND() and it had the possibility of running out of memory due to selecting all the ids into into a ruby array.
 
-If you are noticing slow speeds on your random queries and you have a very very large database table, my advice is to scope down your query to a subset of the table via an indexed scope.  Ex:  ```Artist.where('views > 10').random```  This will result in less calls to RAND() and a faster query.  You might also experiment with the old method by using ```random_by_id_shuffle``` and gauge the resulting speeds.
+If you are noticing slow speeds on your random queries and you have a very very large database table, my advice is to scope down your query to a subset of the table via an indexed scope.  Ex:  ```Artist.where('views > 10').order_by_rand.first```  This will result in less calls to RAND() and a faster query.  You might also experiment with the old method by using ```random_by_id_shuffle``` and gauge the resulting speeds.
 
 ## ActiveRecord Caching
 
-By default, ActiveRecord keeps a cache of the queries executed during the current request. If you call `random` multiple times on the same model or scope, you will end up with the same SQL query again, which causes the cache to return the result of the last query. You will see the following in your log if this happens:
+By default, ActiveRecord keeps a cache of the queries executed during the current request. If you call `order_by_rand` multiple times on the same model or scope, you will end up with the same SQL query again, which causes the cache to return the result of the last query. You will see the following in your log if this happens:
 
 ```
 Artist Load (0.3ms)  SELECT "artists".* FROM "artists" ORDER BY RANDOM() LIMIT 1
 CACHE (0.0ms)  SELECT "artists".* FROM "artists" ORDER BY RANDOM() LIMIT 1
 ```
 
-Fortunately, there is an easy workaround: Just wrap your query in a call to ```uncached```, e.g. ```Artist.uncached { Artist.random }```.
+Fortunately, there is an easy workaround: Just wrap your query in a call to ```uncached```, e.g. ```Artist.uncached { Artist.order_by_rand.first }```.
 
 ## Why
 

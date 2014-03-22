@@ -210,6 +210,10 @@ class RandumbTest < Test::Unit::TestCase
         10.times do
           assert_equal seeded_order, Artist.random(2, seed: @seed)
         end
+
+        10.times do 
+          assert_equal seeded_order, Artist.order_by_rand(seed: @seed).limit(2)
+        end
       end
 
       should "always return the same order using shuffle method" do

@@ -59,3 +59,6 @@ class Test::Unit::TestCase
 
 end
 
+
+# Silence deprications
+ActiveSupport::Deprecation.silenced = true

@@ -4,7 +4,7 @@ class WeightedTest < Test::Unit::TestCase
 
   should "raise exception when called with a non-existent column" do
     assert_raises(ArgumentError) do
-      Artist.random_weighted(:blah)
+      Artist.order_by_rand_weighted(:blah)
     end
     assert_raises(ArgumentError) do
       Artist.random_weighted_by_blah
@@ -13,7 +13,7 @@ class WeightedTest < Test::Unit::TestCase
 
   should "raise exception when called with a non-numeric column" do
     assert_raises(ArgumentError) do
-      Artist.random_weighted(:name)
+      Artist.order_by_rand_weighted(:name)
     end
     assert_raises(ArgumentError) do
       Artist.random_weighted_by_name
@@ -25,7 +25,7 @@ class WeightedTest < Test::Unit::TestCase
     if ENV["DB"] == "postgres"
       should "raise exception if being called with uniq/postgres" do
         assert_raises(Exception) do
-          Artist.uniq.random_weighted(:name)
+          Artist.uniq.order_by_rand_weighted(:name)
         end
       end
     else
@@ -66,6 +66,9 @@ class WeightedTest < Test::Unit::TestCase
       assert_hits_per_views do
         Artist.random_weighted("views").views
       end
+      assert_hits_per_views do 
+        Artist.order_by_rand_weighted("views").first.views
+      end
     end
 
     should "order by ranking column with method_missing" do
@@ -77,6 +80,12 @@ class WeightedTest < Test::Unit::TestCase
     should "order by ranking column with explicit method call and max_items" do
       assert_hits_per_views do
         result = Artist.random_weighted("views", 5)
+        assert(result.size == 5)
+        result.first.views
+      end
+
+      assert_hits_per_views do 
+        result = Artist.order_by_rand_weighted("views").limit(5).all
         assert(result.size == 5)
         result.first.views
       end
@@ -98,11 +107,25 @@ class WeightedTest < Test::Unit::TestCase
           result.last.views
         end
       end
+
+      assert_raises(MiniTest::Assertion) do
+        assert_hits_per_views do
+          result = Artist.order_by_rand_weighted(:views).limit(3)
+          assert(result.size == 3)
+          result.last.views
+        end
+      end
     end
 
     should "order by ranking column with method_missing using 1 max_items" do
       assert_hits_per_views do
         result = Artist.random_weighted_by_views(1)
+        assert(result.size == 1)
+        result.first.views
+      end
+
+      assert_hits_per_views do
+        result = Artist.order_by_rand_weighted(:views).limit(1)
         assert(result.size == 1)
         result.first.views
       end
