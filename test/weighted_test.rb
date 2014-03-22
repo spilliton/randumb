@@ -25,7 +25,7 @@ class WeightedTest < Test::Unit::TestCase
     if ENV["DB"] == "postgres"
       should "raise exception if being called with uniq/postgres" do
         assert_raises(Exception) do
-          Artist.uniq.order_by_rand_weighted(:name)
+          Artist.uniq.order_by_rand_weighted(:views)
         end
       end
     else
