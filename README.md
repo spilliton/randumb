@@ -20,7 +20,7 @@ bundle install
 
 ## Usage
 
-The most common usage is a simple scope you can chain along like any other:
+The most common usage is a scope you can chain along like any other:
 
 ``` ruby
 Artist.order_by_rand.first # a random Artist if there are any, otherwise nil
@@ -36,7 +36,7 @@ randumb simply tacks an additional ```ORDER BY RANDOM()``` (or ```RAND()``` for 
 
 ### Stacking the Deck
 
-You can use the ```order_by_rand_weighted``` method to favor certain records more than others.
+You can use the ```order_by_rand_weighted``` scope to favor certain records more than others.
 
 For example, if you want to favor higher-rated Movies, and your
 Movie model has a numeric ```score``` column, you can do any of the the following:
@@ -53,7 +53,7 @@ Movie.order_by_rand_weighted(:score).limit(10).all
 
 ### Planting A Seed
 
-If you wish to seed the randomness so that you can have predictable outcomes, provide an optional integer seed to any of randumb's method calls:
+If you wish to seed the randomness so that you can have predictable outcomes, provide an optional integer seed to any of randumb's scopes:
 
 ``` ruby
 # Assuming no no records have been added between calls
@@ -62,7 +62,7 @@ Artist.order_by_rand(seed: 123).limit(2)
 Artist.order_by_rand(seed: 123).limit(2)
 ```
 
-One use case is when you are paginating through random records.
+One use case for this scope is when you are paginating through random records.
 
 ### Depricated Syntax
 
@@ -77,9 +77,8 @@ Artist.random_weighted_by_views
 
 ### Random By Id Shuffle
 
-The adventurous may wish to try randumb's earlier algorithm for random record selection: ```random_by_id_shuffle```.
-
-You cannot apply weighting when using this method and limits/orders also behave a little differently:
+The adventurous may wish to try randumb's earlier algorithm for random record selection.
+You cannot apply weighting when using this method and limits/orders also behave a little differently.
 
 ``` ruby
 # gimmie 5 random artists that are in the top 100 most viewed
