@@ -1,3 +1,8 @@
+### 0.5.0
+
+* Adding ```order_by_rand``` and ```order_by_rand_weighted``` scopes
+* Depricating ```random```, ```random_weighted```, and random_weighted dynamic scopes
+
 ### 0.4.0
 
 * Support for Active Record 4
