@@ -89,7 +89,7 @@ module Randumb
           order(order_clause)
         else
           # keep prior orders and append random
-          all_orders = (orders + [order_clause]).join(", ")
+          all_orders = (orders + [order_clause])
           # override all previous orders
           reorder(all_orders)
         end
