@@ -1,6 +1,6 @@
 $:.unshift '.'; require File.dirname(__FILE__) + '/test_helper'
 
-class WeightedTest < Test::Unit::TestCase
+class WeightedTest < Minitest::Test
 
   should "raise exception when called with a non-existent column" do
     assert_raises(ArgumentError) do
@@ -66,7 +66,7 @@ class WeightedTest < Test::Unit::TestCase
       assert_hits_per_views do
         Artist.random_weighted("views").views
       end
-      assert_hits_per_views do 
+      assert_hits_per_views do
         Artist.order_by_rand_weighted("views").first.views
       end
     end
@@ -84,7 +84,7 @@ class WeightedTest < Test::Unit::TestCase
         result.first.views
       end
 
-      assert_hits_per_views do 
+      assert_hits_per_views do
         result = Artist.order_by_rand_weighted("views").limit(5).all
         assert(result.size == 5)
         result.first.views
@@ -135,7 +135,7 @@ class WeightedTest < Test::Unit::TestCase
   def assert_hits_per_views
     hits_per_views = Hash.new
     @view_counts.each { |views| hits_per_views[views] = 0 }
-    
+
     1000.times do
       hits_per_views[yield] += 1
     end

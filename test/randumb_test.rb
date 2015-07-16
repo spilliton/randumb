@@ -1,6 +1,6 @@
 $:.unshift '.'; require File.dirname(__FILE__) + '/test_helper'
 
-class RandumbTest < Test::Unit::TestCase
+class RandumbTest < Minitest::Test
 
   def assert_equal_for_both_methods(expected, obj, *params)
     assert_equal expected, obj.send(:random, *params), "when calling random"
@@ -69,15 +69,15 @@ class RandumbTest < Test::Unit::TestCase
 
         artists = Artist.select(:name).random(3)
         assert_equal false, artists.first.name.nil?
-        assert_raise (ActiveModel::MissingAttributeError) {artists.first.views}
+        assert_raises (ActiveModel::MissingAttributeError) {artists.first.views}
 
         artists = Artist.select(:name).order_by_rand.limit(3)
         assert_equal false, artists.first.name.nil?
-        assert_raise (ActiveModel::MissingAttributeError) {artists.first.views}
+        assert_raises (ActiveModel::MissingAttributeError) {artists.first.views}
 
         artists = Artist.select(:name).random_by_id_shuffle(3)
         assert_equal false, artists.first.name.nil?
-        assert_raise (ActiveModel::MissingAttributeError) {artists.first.views}
+        assert_raises (ActiveModel::MissingAttributeError) {artists.first.views}
       end
 
       should "respect scopes" do
@@ -153,8 +153,8 @@ class RandumbTest < Test::Unit::TestCase
           should "work with uniq" do
             assert_equal 2, Artist.uniq.random(2).length
             assert_equal 2, Artist.uniq.random_by_id_shuffle(2).length
-            assert_not_nil Artist.uniq.random
-            assert_not_nil Artist.uniq.random_by_id_shuffle
+            assert !Artist.uniq.random.nil?
+            assert !Artist.uniq.random_by_id_shuffle.nil?
           end
         end
 
@@ -211,7 +211,7 @@ class RandumbTest < Test::Unit::TestCase
           assert_equal seeded_order, Artist.random(2, seed: @seed)
         end
 
-        10.times do 
+        10.times do
           assert_equal seeded_order, Artist.order_by_rand(seed: @seed).limit(2)
         end
       end
