@@ -69,15 +69,15 @@ class RandumbTest < Minitest::Test
 
         artists = Artist.select(:name).random(3)
         assert_equal false, artists.first.name.nil?
-        assert_raise (ActiveModel::MissingAttributeError) {artists.first.views}
+        assert_raises (ActiveModel::MissingAttributeError) {artists.first.views}
 
         artists = Artist.select(:name).order_by_rand.limit(3)
         assert_equal false, artists.first.name.nil?
-        assert_raise (ActiveModel::MissingAttributeError) {artists.first.views}
+        assert_raises (ActiveModel::MissingAttributeError) {artists.first.views}
 
         artists = Artist.select(:name).random_by_id_shuffle(3)
         assert_equal false, artists.first.name.nil?
-        assert_raise (ActiveModel::MissingAttributeError) {artists.first.views}
+        assert_raises (ActiveModel::MissingAttributeError) {artists.first.views}
       end
 
       should "respect scopes" do
@@ -153,8 +153,8 @@ class RandumbTest < Minitest::Test
           should "work with uniq" do
             assert_equal 2, Artist.uniq.random(2).length
             assert_equal 2, Artist.uniq.random_by_id_shuffle(2).length
-            assert_not_nil Artist.uniq.random
-            assert_not_nil Artist.uniq.random_by_id_shuffle
+            assert !Artist.uniq.random.nil?
+            assert !Artist.uniq.random_by_id_shuffle.nil?
           end
         end
 
