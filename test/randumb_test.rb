@@ -1,6 +1,6 @@
 $:.unshift '.'; require File.dirname(__FILE__) + '/test_helper'
 
-class RandumbTest < Test::Unit::TestCase
+class RandumbTest < Minitest::Test
 
   def assert_equal_for_both_methods(expected, obj, *params)
     assert_equal expected, obj.send(:random, *params), "when calling random"
@@ -211,7 +211,7 @@ class RandumbTest < Test::Unit::TestCase
           assert_equal seeded_order, Artist.random(2, seed: @seed)
         end
 
-        10.times do 
+        10.times do
           assert_equal seeded_order, Artist.order_by_rand(seed: @seed).limit(2)
         end
       end
