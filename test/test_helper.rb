@@ -1,6 +1,6 @@
 $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 require 'rubygems'
-require 'test/unit'
+require "minitest/autorun"
 require 'shoulda'
 require 'factory_girl'
 require 'faker'
@@ -14,14 +14,14 @@ config = YAML::load(File.open(File.expand_path("../databases.yml", __FILE__)))
 version = ActiveRecord::VERSION::STRING
 driver = (ENV["DB"] or "sqlite3").downcase
 in_memory = config[driver]["database"] == ":memory:"
-    
+
 # http://about.travis-ci.org/docs/user/database-setup/
 commands = {
   "mysql"    => "mysql -e 'create database randumb_test;'",
   "postgres" => "psql -c 'create database randumb_test;' -U postgres"
 }
 %x{#{commands[driver] || true}}
-    
+
 ActiveRecord::Base.establish_connection config[driver]
 puts "Using #{RUBY_VERSION} AR #{version} with #{driver}"
 
@@ -33,7 +33,7 @@ ActiveRecord::Base.connection.create_table(:artists, :force => true) do |t|
   t.datetime "created_at"
   t.datetime "updated_at"
 end
-  
+
 ActiveRecord::Base.connection.create_table(:albums, :force => true) do |t|
   t.string  "name"
   t.integer "views"
@@ -41,7 +41,7 @@ ActiveRecord::Base.connection.create_table(:albums, :force => true) do |t|
   t.datetime "created_at"
   t.datetime "updated_at"
 end
-  
+
 # setup models for lazy load
 dep = defined?(ActiveSupport::Dependencies) ? ActiveSupport::Dependencies : ::Dependencies
 dep.autoload_paths.unshift MODELS_PATH
@@ -50,7 +50,7 @@ dep.autoload_paths.unshift MODELS_PATH
 require 'test/models/factories'
 
 # clear db for every test
-class Test::Unit::TestCase
+class Minitest::Test
 
   def setup
     Artist.delete_all

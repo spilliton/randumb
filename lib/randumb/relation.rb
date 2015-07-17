@@ -57,7 +57,7 @@ module Randumb
         # get the records and shuffle since the order of the ids
         # passed to where() isn't retained in the result set
         rng = random_number_generator(opts)
-        records = the_scope.where(:id => ids).shuffle!(:random => rng)
+        records = the_scope.where(:id => ids).to_a.shuffle!(:random => rng)
 
         # return first record if method was called without parameters
         return_first_record ? records.first : records
