@@ -63,8 +63,15 @@ module Randumb
         return_first_record ? records.first : records
       end
 
-      def order_by_rand(opts={})
-        build_order_scope(opts)
+      def order_by_rand(opts = {})
+        if opts.is_a?(Hash)
+          build_order_scope(opts)
+        else
+          raise ArgumentError.new(
+            "order_by_rand() expects a hash of options.  If you need to limit "\
+            "results simply add a limit to your scope ex: Artist.order_by_rand.limit(1)"
+          )
+        end
       end
 
       def order_by_rand_weighted(ranking_column, opts={})

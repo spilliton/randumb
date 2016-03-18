@@ -25,6 +25,13 @@ class RandumbTest < Minitest::Test
     assert_equal_for_both_methods nil, Artist.limit(50)
   end
 
+  should "raise helpful error if non-hash passed" do
+    error = assert_raises ArgumentError do
+      Artist.order_by_rand(10)
+    end
+    assert error.message.include?("order_by_rand")
+  end
+
   context "1 record in the table" do
     setup do
       @high_on_fire = FactoryGirl.create(:artist, :name => "High On Fire", :views => 1)
