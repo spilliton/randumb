@@ -16,8 +16,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'rake'
 
   # need to test different versions of active record
-  ar_env = ENV['ACTIVE_RECORD_VERSION'] || '>= 3.0.0'
-  ar_env = ">= 4.0.0" if ar_env == 'latest'
+  ar_env = ENV['ACTIVE_RECORD_VERSION'] || '>= 3.0.20'
+  ar_env = ">= 5.0.1" if ar_env == 'latest'
   s.add_dependency 'activesupport', ar_env
   s.add_dependency 'activerecord', ar_env
 
@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   db_env = ENV['DB'] || 'sqlite3'
   case db_env
   when 'sqlite3'
-    s.add_development_dependency 'sqlite3', '1.3.7'
+    s.add_development_dependency 'sqlite3'
   when 'mysql'
     if ar_env =~ /^3\.0/
       s.add_development_dependency 'mysql2', '< 0.3'
@@ -38,6 +38,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "minitest"
   s.add_development_dependency "shoulda"
-  s.add_development_dependency "factory_girl", "~> 3.0"
+  s.add_development_dependency "factory_girl"
   s.add_development_dependency "faker"
+  s.add_development_dependency "pry"
 end

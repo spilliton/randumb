@@ -3,8 +3,13 @@ $:.unshift '.'; require File.dirname(__FILE__) + '/test_helper'
 class RandumbTest < Minitest::Test
 
   def assert_equal_for_both_methods(expected, obj, *params)
-    assert_equal expected, obj.send(:random, *params), "when calling random"
-    assert_equal expected, obj.send(:random_by_id_shuffle, *params), "when calling random_by_id_shuffle"
+    if expected.nil?
+      assert_nil obj.send(:random, *params), "when calling random"
+      assert_nil obj.send(:random_by_id_shuffle, *params), "when calling random_by_id_shuffle"
+    else
+      assert_equal expected, obj.send(:random, *params), "when calling random"
+      assert_equal expected, obj.send(:random_by_id_shuffle, *params), "when calling random_by_id_shuffle"
+    end
   end
 
   should "should return empty when no record in table" do
@@ -72,19 +77,22 @@ class RandumbTest < Minitest::Test
       end
 
       should "respect selecting certain columns" do
+        # this version doesn't throw for some reason...
+        skip_throw_missing = ActiveRecord::VERSION::MAJOR == 3 && ActiveRecord::VERSION::MINOR == 0
+
         assert_equal 3, Artist.find(@fiona_apple.id).views
 
         artists = Artist.select(:name).random(3)
         assert_equal false, artists.first.name.nil?
-        assert_raises (ActiveModel::MissingAttributeError) {artists.first.views}
+        assert_raises (ActiveModel::MissingAttributeError) { artists.first.views } unless skip_throw_missing
 
         artists = Artist.select(:name).order_by_rand.limit(3)
         assert_equal false, artists.first.name.nil?
-        assert_raises (ActiveModel::MissingAttributeError) {artists.first.views}
+        assert_raises (ActiveModel::MissingAttributeError) { artists.first.views } unless skip_throw_missing
 
         artists = Artist.select(:name).random_by_id_shuffle(3)
         assert_equal false, artists.first.name.nil?
-        assert_raises (ActiveModel::MissingAttributeError) {artists.first.views}
+        assert_raises (ActiveModel::MissingAttributeError) { artists.first.views } unless skip_throw_missing
       end
 
       should "respect scopes" do
