@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   db_env = ENV['DB'] || 'sqlite3'
   case db_env
   when 'sqlite3'
-    s.add_development_dependency 'sqlite3', '1.3.7'
+    s.add_development_dependency 'sqlite3'
   when 'mysql'
     if ar_env =~ /^3\.0/
       s.add_development_dependency 'mysql2', '< 0.3'
