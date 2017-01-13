@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rake'
 
   # need to test different versions of active record
-  ar_env = ENV['ACTIVE_RECORD_VERSION'] || '>= 3.0.0'
+  ar_env = ENV['ACTIVE_RECORD_VERSION'] || '>= 3.0.20'
   ar_env = ">= 5.0.1" if ar_env == 'latest'
   s.add_dependency 'activesupport', ar_env
   s.add_dependency 'activerecord', ar_env
