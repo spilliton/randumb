@@ -125,7 +125,7 @@ module Randumb
 
       # Returns all matching ids from the db, shuffles them,
       # then returns an array containing at most max_ids
-      def fetch_random_ids(relation, max_ids, opts={})
+      def fetch_random_ids(relation, max_ids, opts = {})
         # clear these for our id only query
         relation.select_values = []
         relation.includes_values = []
@@ -138,11 +138,11 @@ module Randumb
         rng = random_number_generator(opts)
         if max_ids == 1 && id_results.count > 0
           rand_index = rng.rand(id_results.count)
-          [ id_results[ rand_index ]['id'] ]
+          [id_results[rand_index]["id"]]
         else
-          # ActiveRecord 4 requires .to_ary
-          arr = id_results.respond_to?(:to_ary) ? id_results.to_ary : id_results
-          arr.shuffle!(:random => rng)[0,max_ids].collect!{ |h| h['id'] }
+          # ActiveRecord 4 requires .to_a
+          arr = id_results.respond_to?(:to_a) ? id_results.to_a : id_results
+          arr.shuffle!(random: rng)[0, max_ids].collect! { |h| h["id"] }
         end
       end
 
