@@ -12,9 +12,13 @@ env:
   - DB=mysql ACTIVE_RECORD_VERSION=3.2.22
   - DB=sqlite3 ACTIVE_RECORD_VERSION=3.2.22
 # active record 4 and whatever is latest
-  - DB=postgres ACTIVE_RECORD_VERSION=4.1.12
-  - DB=mysql ACTIVE_RECORD_VERSION=4.1.12
-  - DB=sqlite3 ACTIVE_RECORD_VERSION=4.1.12
+  - DB=postgres ACTIVE_RECORD_VERSION=4.2.7
+  - DB=mysql ACTIVE_RECORD_VERSION=4.2.1
+  - DB=sqlite3 ACTIVE_RECORD_VERSION=4.2.7
+# active record 4 and whatever is latest
+  - DB=postgres ACTIVE_RECORD_VERSION=5.0.1
+  - DB=mysql ACTIVE_RECORD_VERSION=5.0.1
+  - DB=sqlite3 ACTIVE_RECORD_VERSION=5.0.1
 # active record 4 and whatever is latest
   - DB=postgres ACTIVE_RECORD_VERSION=latest
   - DB=mysql ACTIVE_RECORD_VERSION=latest
