@@ -120,13 +120,13 @@ class WeightedTest < Minitest::Test
     should "order by ranking column with method_missing using 1 max_items" do
       assert_hits_per_views do
         result = Artist.random_weighted_by_views(1)
-        assert(result.size == 1)
+        assert_equal 1, result.length
         result.first.views
       end
 
       assert_hits_per_views do
         result = Artist.order_by_rand_weighted(:views).limit(1)
-        assert(result.size == 1)
+        assert_equal 1, result.length
         result.first.views
       end
     end
