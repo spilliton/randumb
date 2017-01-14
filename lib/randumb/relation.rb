@@ -162,25 +162,27 @@ module Randumb
 
 
     # Class methods
+    # where(nil) is because:
+    # http://stackoverflow.com/questions/18198963/with-rails-4-model-scoped-is-deprecated-but-model-all-cant-replace-it
     module Base
       def random(max_items = nil, opts = {})
-        scoped.random(max_items, opts)
+        where(nil).random(max_items, opts)
       end
 
       def random_weighted(ranking_column, max_items = nil, opts = {})
-        scoped.random_weighted(ranking_column, max_items, opts)
+        where(nil).random_weighted(ranking_column, max_items, opts)
       end
 
       def random_by_id_shuffle(max_items = nil, opts = {})
-        scoped.random_by_id_shuffle(max_items, opts)
+        where(nil).random_by_id_shuffle(max_items, opts)
       end
 
       def order_by_rand(opts = {})
-        scoped.order_by_rand(opts)
+        where(nil).order_by_rand(opts)
       end
 
       def order_by_rand_weighted(ranking_column, opts={})
-        scoped.order_by_rand_weighted(ranking_column, opts)
+        where(nil).order_by_rand_weighted(ranking_column, opts)
       end
     end
 
