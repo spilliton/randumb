@@ -164,23 +164,23 @@ module Randumb
     # Class methods
     module Base
       def random(max_items = nil, opts = {})
-        relation.random(max_items, opts)
+        scoped.random(max_items, opts)
       end
 
       def random_weighted(ranking_column, max_items = nil, opts = {})
-        relation.random_weighted(ranking_column, max_items, opts)
+        scoped.random_weighted(ranking_column, max_items, opts)
       end
 
       def random_by_id_shuffle(max_items = nil, opts = {})
-        relation.random_by_id_shuffle(max_items, opts)
+        scoped.random_by_id_shuffle(max_items, opts)
       end
 
-      def order_by_rand(opts={})
-        relation.order_by_rand(opts)
+      def order_by_rand(opts = {})
+        scoped.order_by_rand(opts)
       end
 
       def order_by_rand_weighted(ranking_column, opts={})
-        relation.order_by_rand_weighted(ranking_column, opts)
+        scoped.order_by_rand_weighted(ranking_column, opts)
       end
     end
 

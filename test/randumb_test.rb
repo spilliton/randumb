@@ -57,6 +57,14 @@ class RandumbTest < Minitest::Test
       assert_equal_for_both_methods nil, Artist.where(:name => "The Little Gentlemen")
     end
 
+    should "respect default scope" do
+      @high_on_fire.deleted_at = Time.now.utc
+      @high_on_fire.save!
+      assert_equal 0, Artist.count
+      assert_nil Artist.order_by_rand.first
+      assert_equal @high_on_fire, Artist.unscoped.order_by_rand.first
+    end
+
     context "3 records in table" do
       setup do
         @fiona_apple = FactoryGirl.create(:artist, :name => "Fiona Apple", :views => 3)
