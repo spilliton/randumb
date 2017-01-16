@@ -1,3 +1,11 @@
+### 0.5.2
+
+* Fixing [bug](https://github.com/spilliton/randumb/issues/31) that caused randumb to override default scopes on models
+
+### 0.5.1
+
+* Fixing [bug](https://github.com/spilliton/randumb/issues/35) that occurred when using ActiveRecord 5.x
+
 ### 0.5.0
 
 * Adding ```order_by_rand``` and ```order_by_rand_weighted``` scopes
