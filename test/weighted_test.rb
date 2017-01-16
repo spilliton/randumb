@@ -59,7 +59,17 @@ class WeightedTest < Minitest::Test
   context "order by ranking_column" do
     setup do
       @view_counts = [1, 2, 3, 4, 5]
-      @view_counts.each { |views| FactoryGirl.create(:artist, :views => views) }
+      @view_counts.each { |views| FactoryGirl.create(:artist, views: views) }
+    end
+
+    should "respect default scope" do
+      artist = Artist.last
+      artist.deleted_at = Time.now.utc
+      artist.save!
+      50.times do
+        assert Artist.random_weighted("views").id != artist.id, "should never pick deleted artist"
+      end
+      assert_equal 4, Artist.order_by_rand_weighted("views").all.length
     end
 
     should "order by ranking column with explicit method call" do

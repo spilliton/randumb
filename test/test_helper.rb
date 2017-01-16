@@ -32,6 +32,7 @@ ActiveRecord::Base.connection.create_table(:artists, :force => true) do |t|
   t.float    "rating"
   t.datetime "created_at"
   t.datetime "updated_at"
+  t.datetime "deleted_at"
 end
 
 ActiveRecord::Base.connection.create_table(:albums, :force => true) do |t|
@@ -40,6 +41,7 @@ ActiveRecord::Base.connection.create_table(:albums, :force => true) do |t|
   t.integer "artist_id"
   t.datetime "created_at"
   t.datetime "updated_at"
+  t.datetime "deleted_at"
 end
 
 # setup models for lazy load
