@@ -2,7 +2,7 @@ $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 require 'rubygems'
 require "minitest/autorun"
 require 'shoulda'
-require 'factory_girl'
+require 'factory_bot'
 require 'faker'
 require 'active_record'
 require 'active_support/dependencies'
