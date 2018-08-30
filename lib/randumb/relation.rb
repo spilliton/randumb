@@ -91,7 +91,7 @@ module Randumb
           Randumb::Syntax.random_order_clause(opts)
         end
 
-        order(order_clause)
+        order(Arel.sql(order_clause))
       end
 
       # postgres won't let you do an order_by when also doing a distinct
