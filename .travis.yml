@@ -1,6 +1,9 @@
 language: ruby
 rvm:
   - 2.3.0
+services:
+  - postgresql
+  - mysql
 # https://github.com/norman/friendly_id/blob/master/.travis.yml
 env:
 # lowest supported active record
