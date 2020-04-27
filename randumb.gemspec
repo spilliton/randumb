@@ -21,20 +21,10 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport', ar_env
   s.add_dependency 'activerecord', ar_env
 
-  # for gem dev
-  db_env = ENV['DB'] || 'sqlite3'
-  case db_env
-  when 'sqlite3'
-    s.add_development_dependency 'sqlite3'
-  when 'mysql'
-    if ar_env =~ /^3\.0/
-      s.add_development_dependency 'mysql2', '< 0.3'
-    else
-      s.add_development_dependency 'mysql2', '~> 0.3.11'
-    end
-  when 'postgres'
-    s.add_development_dependency 'pg'
-  end
+
+  s.add_development_dependency 'sqlite3'
+  s.add_development_dependency 'mysql2', '~> 0.3.11'
+  s.add_development_dependency 'pg'
 
   s.add_development_dependency "minitest"
   s.add_development_dependency "shoulda"
