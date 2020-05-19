@@ -22,8 +22,18 @@ commands = {
 }
 %x{#{commands[driver] || true}}
 
+# https://github.com/brianmario/mysql2/issues/784
+if driver == 'mysql'
+  require 'active_record/connection_adapters/abstract_mysql_adapter'
+
+  class ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
+    NATIVE_DATABASE_TYPES[:primary_key] = "int(11) auto_increment PRIMARY KEY"
+  end
+end
+
 ActiveRecord::Base.establish_connection config[driver]
 puts "Using #{RUBY_VERSION} AR #{version} with #{driver}"
+
 
 ActiveRecord::Base.connection.create_table(:artists, :force => true) do |t|
   t.string   "name"
