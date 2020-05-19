@@ -21,10 +21,10 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport', ar_env
   s.add_dependency 'activerecord', ar_env
 
-
-  s.add_development_dependency 'sqlite3'
-  s.add_development_dependency 'mysql2'
-  s.add_development_dependency 'activerecord-mysql2-adapter'
+  # I don't know how to ruby anymore...just locking these to versions that work
+  # because I'm having a hard time debugging on latest versions
+  s.add_development_dependency 'sqlite3', '1.3.13'
+  s.add_development_dependency 'mysql2', '0.2.24'
   s.add_development_dependency 'pg', '0.19.0'
 
   s.add_development_dependency "minitest"
