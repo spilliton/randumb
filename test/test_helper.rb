@@ -22,6 +22,8 @@ commands = {
 }
 %x{#{commands[driver] || true}}
 
+
+
 ActiveRecord::Base.establish_connection config[driver]
 puts "Using #{RUBY_VERSION} AR #{version} with #{driver}"
 
