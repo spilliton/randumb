@@ -25,7 +25,6 @@ commands = {
 ActiveRecord::Base.establish_connection config[driver]
 puts "Using #{RUBY_VERSION} AR #{version} with #{driver}"
 
-
 ActiveRecord::Base.connection.create_table(:artists, :force => true) do |t|
   t.string   "name"
   t.integer  "views"
