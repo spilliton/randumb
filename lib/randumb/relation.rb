@@ -91,15 +91,10 @@ module Randumb
           Randumb::Syntax.random_order_clause(opts)
         end
 
-        if ::ActiveRecord::VERSION::MAJOR == 3 && ::ActiveRecord::VERSION::MINOR < 2
-          # AR 3.0.0 support
-          order(order_clause)
-        else
-          # keep prior orders and append random
-          all_orders = (arel.orders + [order_clause])
-          # override all previous orders
-          reorder(all_orders)
-        end
+        # keep prior orders and append random
+        all_orders = (arel.orders + [order_clause])
+        # override all previous orders
+        reorder(all_orders)
       end
 
       # postgres won't let you do an order_by when also doing a distinct

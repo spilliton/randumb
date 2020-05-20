@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :artist do
     name { Faker::Lorem.words(3).join(' ') }
     views  { Random.rand(50) }

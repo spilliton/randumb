@@ -41,7 +41,7 @@ class WeightedTest < Minitest::Test
   end
 
   should "not interfere with active record dynamic methods that use method_missing" do
-    @artist = FactoryGirl.create(:artist, :name => 'Spiritualized')
+    @artist = FactoryBot.create(:artist, :name => 'Spiritualized')
     assert_equal @artist, Artist.find_by_name('Spiritualized')
   end
 
@@ -59,7 +59,7 @@ class WeightedTest < Minitest::Test
   context "order by ranking_column" do
     setup do
       @view_counts = [1, 2, 3, 4, 5]
-      @view_counts.each { |views| FactoryGirl.create(:artist, views: views) }
+      @view_counts.each { |views| FactoryBot.create(:artist, views: views) }
     end
 
     should "respect default scope" do
