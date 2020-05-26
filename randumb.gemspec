@@ -23,7 +23,8 @@ Gem::Specification.new do |s|
 
   # I don't know how to ruby anymore...just locking these to versions that work
   # because I'm having a hard time debugging on latest versions
-  s.add_development_dependency 'sqlite3', '~> 1.3.6'
+  sqlite_version = ar_env == 'latest' ? '~> 1.4.2' : '~> 1.3.6'
+  s.add_development_dependency 'sqlite3', sqlite_version
   s.add_development_dependency 'mysql2', '0.4.10'
   s.add_development_dependency 'pg', '0.19.0'
 
