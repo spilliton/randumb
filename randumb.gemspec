@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'mysql2', '0.4.10'
   s.add_development_dependency 'pg', '0.19.0'
 
+  s.add_development_dependency 'bigdecimal', '1.4.2'
   s.add_development_dependency "minitest"
   s.add_development_dependency "shoulda"
   s.add_development_dependency "factory_bot"
