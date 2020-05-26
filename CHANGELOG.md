@@ -1,3 +1,7 @@
+### 0.6.0
+
+* Dropping support for ActiveRecord 3, delegate method issue fix, deprecation fixes
+
 ### 0.5.2
 
 * Fixing [bug](https://github.com/spilliton/randumb/issues/31) that caused randumb to override default scopes on models
